@@ -169,8 +169,8 @@
 
             <div class="main-buttons">
 
-                <button class="main-btn scan-btn">
-                    📷 تحليل طعام
+                <button class="main-btn scan-btn" onclick="openCamera()">
+    📷 تحليل الطعام
                 </button>
 
                 <button class="main-btn inventory-btn">
@@ -237,7 +237,31 @@
         </nav>
 
     </div>
+<script>
+    const inventoryButton = document.querySelector(".inventory-btn");
 
+    inventoryButton.addEventListener("click", function () {
+        alert("🧊 مخزوني\n\nهنا راح نضيف الأطعمة الموجودة في الثلاجة ونتابع تواريخ صلاحيتها.");
+    });
+</script>
+
+<script>
+    const scanButton =
+     document.querySelector(".scan-btn");
+
+    scanButton.addEventListener("click", function () {
+        alert("📷 هنا راح نفتح الكاميرا لتحليل الطعام أو مسح الباركود.");
+    });
+</script>
+<script>
+    function openCamera() {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.capture = "environment";
+        input.click();
+    }
+</script>
 </body>
 
 </html>
