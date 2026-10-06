@@ -264,46 +264,54 @@ inventoryButton.addEventListener("click", function () {
         card.style.borderRadius = "18px";
         card.style.marginBottom = "12px";
 
-        let expiryMessage = "📅 تاريخ الانتهاء: " + item.expiry;
-        let expiryColor = "#2e7d32";
+        let expiryMessage = "⚪ تاريخ الانتهاء غير واضح";
+        let expiryColor = "#777";
 
         if (item.expiry && item.expiry !== "غير محدد") {
 
-            const today = new Date();
             const expiryDate = new Date(item.expiry);
 
-            const difference =
-                expiryDate - today;
+            if (!isNaN(expiryDate.getTime())) {
 
-            const daysLeft =
-                Math.ceil(
-                    difference / (1000 * 60 * 60 * 24)
-                );
+                const today = new Date();
 
-            if (daysLeft < 0) {
+                today.setHours(0, 0, 0, 0);
+                expiryDate.setHours(0, 0, 0, 0);
 
-                expiryMessage =
-                    "🔴 منتهي الصلاحية";
+                const difference =
+                    expiryDate - today;
 
-                expiryColor = "#c62828";
+                const daysLeft =
+                    Math.ceil(
+                        difference /
+                        (1000 * 60 * 60 * 24)
+                    );
 
-            } else if (daysLeft <= 7) {
+                if (daysLeft < 0) {
 
-                expiryMessage =
-                    "🟡 ينتهي خلال " +
-                    daysLeft +
-                    " يوم";
+                    expiryMessage =
+                        "🔴 منتهي الصلاحية";
 
-                expiryColor = "#f57c00";
+                    expiryColor = "#c62828";
 
-            } else {
+                } else if (daysLeft <= 7) {
 
-                expiryMessage =
-                    "🟢 صالح — باقي " +
-                    daysLeft +
-                    " يوم";
+                    expiryMessage =
+                        "🟡 ينتهي خلال " +
+                        daysLeft +
+                        " يوم";
 
-                expiryColor = "#2e7d32";
+                    expiryColor = "#f57c00";
+
+                } else {
+
+                    expiryMessage =
+                        "🟢 صالح — باقي " +
+                        daysLeft +
+                        " يوم";
+
+                    expiryColor = "#2e7d32";
+                }
             }
         }
 
