@@ -201,6 +201,10 @@
 
             </div>
 <div id="reader" style="display:none;"></div>
+<div id="inventoryPage" style="display:none; padding:20px;">
+    <h2>🧊 مخزوني</h2>
+    <div id="inventoryList"></div>
+</div>
         </main>
 
         <nav class="bottom-nav">
@@ -232,26 +236,38 @@
 const inventoryButton = document.querySelector(".inventory-btn");
 
 inventoryButton.addEventListener("click", function () {
+    const inventoryPage = document.getElementById("inventoryPage");
+    const inventoryList = document.getElementById("inventoryList");
     const inventory = JSON.parse(localStorage.getItem("inventory")) || [];
 
+    inventoryPage.style.display = "block";
+
     if (inventory.length === 0) {
-        alert("🧊 مخزوني فارغ حاليًا");
+        inventoryList.innerHTML = "<p>🧊 مخزوني فارغ حاليًا</p>";
         return;
     }
 
-    let message = "🧊 مخزوني\n\n";
+    inventoryList.innerHTML = "";
 
-    inventory.forEach((item, index) => {
-        message +=
-            (index + 1) + ". " + item.name + "\n" +
-            "العلامة: " + item.brand + "\n" +
-            "الباركود: " + item.barcode + "\n" +
-            "تاريخ الانتهاء: " + item.expiry + "\n\n";
+    inventory.forEach(function (item) {
+        const card = document.createElement("div");
+
+        card.style.background = "#e9f6ef";
+        card.style.padding = "18px";
+        card.style.borderRadius = "18px";
+        card.style.marginBottom = "12px";
+
+        card.innerHTML =
+            "<h3>🧊 " + item.name + "</h3>" +
+            "<p>العلامة: " + item.brand + "</p>" +
+            "<p>📅 تاريخ الانتهاء: " + item.expiry + "</p>" +
+            "<p>🏷️ الباركود: " + item.barcode + "</p>";
+
+        inventoryList.appendChild(card);
     });
-
-    alert(message);
 });
 </script>
+
 <script>
 function openCamera() {
     const reader = document.getElementById("reader");
