@@ -149,10 +149,10 @@
             margin-bottom: 4px;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 
 <body>
-
     <div class="app">
 
         <header>
@@ -205,7 +205,7 @@
                 </div>
 
             </div>
-
+<div id="reader" style="display:none;"></div>
         </main>
 
         <nav class="bottom-nav">
@@ -248,12 +248,25 @@
 
 <script>
     function openCamera() {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = "image/*";
-        input.capture = "environment";
-        input.click();
+        const reader = document.getElementById("reader");
+        reader.style.display = "block";
+
+        const scanner = new Html5Qrcode("reader");
+
+        scanner.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: 250
+            },
+            function(decodedText) {
+                alert("تم مسح الباركود: " + decodedText);
+                scanner.stop();
+            },
+            function() {}
+        );
     }
+
 </script>
 </body>
 
