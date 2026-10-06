@@ -190,11 +190,6 @@
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">🧊</div>
-                    <h3>مخزوني</h3>
-                </div>
-
-                <div class="feature-card">
                     <div class="feature-icon">🕵️</div>
                     <h3>الثلاجة الذكية </h3>
                 </div>
@@ -216,11 +211,6 @@
             </button>
 
             <button class="nav-btn">
-                <span class="nav-icon">🧊</span>
-                مخزوني
-            </button>
-
-            <button class="nav-btn">
                 <span class="nav-icon">🍳</span>
                 وصفاتي
             </button>
@@ -239,11 +229,28 @@
 
     </div>
 <script>
-    const inventoryButton = document.querySelector(".inventory-btn");
+const inventoryButton = document.querySelector(".inventory-btn");
 
-    inventoryButton.addEventListener("click", function () {
-        alert("🧊 مخزوني\n\nهنا راح نضيف الأطعمة الموجودة في الثلاجة ونتابع تواريخ صلاحيتها.");
+inventoryButton.addEventListener("click", function () {
+    const inventory = JSON.parse(localStorage.getItem("inventory")) || [];
+
+    if (inventory.length === 0) {
+        alert("🧊 مخزوني فارغ حاليًا");
+        return;
+    }
+
+    let message = "🧊 مخزوني\n\n";
+
+    inventory.forEach((item, index) => {
+        message +=
+            (index + 1) + ". " + item.name + "\n" +
+            "العلامة: " + item.brand + "\n" +
+            "الباركود: " + item.barcode + "\n" +
+            "تاريخ الانتهاء: " + item.expiry + "\n\n";
     });
+
+    alert(message);
+});
 </script>
 <script>
 function openCamera() {
@@ -270,12 +277,25 @@ function openCamera() {
 
                        const expiryDate = prompt("📅 أدخلي تاريخ انتهاء المنتج:");
 
+const productName = product.product_name_ar || product.product_name || "غير معروف";
+const brand = product.brands || "غير معروف";
+
+const savedProduct = {
+    name: productName,
+    brand: brand,
+    barcode: decodedText,
+    expiry: expiryDate || "غير محدد"
+};
+
+let inventory = JSON.parse(localStorage.getItem("inventory")) || [];
+inventory.push(savedProduct);
+localStorage.setItem("inventory", JSON.stringify(inventory));
+
 alert(
-    "🧊 تم العثور على المنتج\n\n" +
-    "الاسم: " + (product.product_name_ar || product.product_name || "غير معروف") + "\n" +
-    "العلامة: " + (product.brands || "غير معروف") + "\n" +
-    "الباركود: " + decodedText + "\n" +
-    "تاريخ الانتهاء: " + (expiryDate || "لم يتم إدخاله")
+    "✅ تم حفظ المنتج في مخزوني\n\n" +
+    "الاسم: " + productName + "\n" +
+    "العلامة: " + brand + "\n" +
+    "تاريخ الانتهاء: " + savedProduct.expiry
 );
                     } else {
                         alert("❌ المنتج غير موجود في قاعدة البيانات");
