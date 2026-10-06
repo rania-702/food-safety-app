@@ -236,10 +236,12 @@
 const inventoryButton = document.querySelector(".inventory-btn");
 
 inventoryButton.addEventListener("click", function () {
+    const homePage = document.querySelector(".home-page");
     const inventoryPage = document.getElementById("inventoryPage");
     const inventoryList = document.getElementById("inventoryList");
     const inventory = JSON.parse(localStorage.getItem("inventory")) || [];
 
+    homePage.style.display = "none";
     inventoryPage.style.display = "block";
 
     if (inventory.length === 0) {
@@ -267,7 +269,6 @@ inventoryButton.addEventListener("click", function () {
     });
 });
 </script>
-
 <script>
 function openCamera() {
     const reader = document.getElementById("reader");
