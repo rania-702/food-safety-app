@@ -268,12 +268,15 @@ function openCamera() {
                     if (data.status === 1) {
                         const product = data.product;
 
-                        alert(
-                            "🧊 تم العثور على المنتج\n\n" +
-                            "الاسم: " + (product.product_name_ar || product.product_name || "غير معروف") + "\n" +
-                            "العلامة: " + (product.brands || "غير معروف") + "\n" +
-                            "الباركود: " + decodedText
-                        );
+                       const expiryDate = prompt("📅 أدخلي تاريخ انتهاء المنتج:");
+
+alert(
+    "🧊 تم العثور على المنتج\n\n" +
+    "الاسم: " + (product.product_name_ar || product.product_name || "غير معروف") + "\n" +
+    "العلامة: " + (product.brands || "غير معروف") + "\n" +
+    "الباركود: " + decodedText + "\n" +
+    "تاريخ الانتهاء: " + (expiryDate || "لم يتم إدخاله")
+);
                     } else {
                         alert("❌ المنتج غير موجود في قاعدة البيانات");
                     }
