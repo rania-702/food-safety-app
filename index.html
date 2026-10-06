@@ -236,22 +236,27 @@
 const inventoryButton = document.querySelector(".inventory-btn");
 
 inventoryButton.addEventListener("click", function () {
+
     const homePage = document.querySelector(".home-page");
     const inventoryPage = document.getElementById("inventoryPage");
     const inventoryList = document.getElementById("inventoryList");
-    const inventory = JSON.parse(localStorage.getItem("inventory")) || [];
+
+    const inventory =
+        JSON.parse(localStorage.getItem("inventory")) || [];
 
     homePage.style.display = "none";
     inventoryPage.style.display = "block";
 
     if (inventory.length === 0) {
-        inventoryList.innerHTML = "<p>🧊 مخزوني فارغ حاليًا</p>";
+        inventoryList.innerHTML =
+            "<p>🧊 مخزوني فارغ حاليًا</p>";
         return;
     }
 
     inventoryList.innerHTML = "";
 
     inventory.forEach(function (item) {
+
         const card = document.createElement("div");
 
         card.style.background = "#e9f6ef";
@@ -259,16 +264,65 @@ inventoryButton.addEventListener("click", function () {
         card.style.borderRadius = "18px";
         card.style.marginBottom = "12px";
 
+        let expiryMessage = "📅 تاريخ الانتهاء: " + item.expiry;
+        let expiryColor = "#2e7d32";
+
+        if (item.expiry && item.expiry !== "غير محدد") {
+
+            const today = new Date();
+            const expiryDate = new Date(item.expiry);
+
+            const difference =
+                expiryDate - today;
+
+            const daysLeft =
+                Math.ceil(
+                    difference / (1000 * 60 * 60 * 24)
+                );
+
+            if (daysLeft < 0) {
+
+                expiryMessage =
+                    "🔴 منتهي الصلاحية";
+
+                expiryColor = "#c62828";
+
+            } else if (daysLeft <= 7) {
+
+                expiryMessage =
+                    "🟡 ينتهي خلال " +
+                    daysLeft +
+                    " يوم";
+
+                expiryColor = "#f57c00";
+
+            } else {
+
+                expiryMessage =
+                    "🟢 صالح — باقي " +
+                    daysLeft +
+                    " يوم";
+
+                expiryColor = "#2e7d32";
+            }
+        }
+
         card.innerHTML =
             "<h3>🧊 " + item.name + "</h3>" +
             "<p>العلامة: " + item.brand + "</p>" +
+            "<p>🏷️ الباركود: " + item.barcode + "</p>" +
             "<p>📅 تاريخ الانتهاء: " + item.expiry + "</p>" +
-            "<p>🏷️ الباركود: " + item.barcode + "</p>";
+            "<p style='color:" + expiryColor +
+            "; font-weight:bold;'>" +
+            expiryMessage +
+            "</p>";
 
         inventoryList.appendChild(card);
     });
 });
 </script>
+
+  
 <script>
 function openCamera() {
     const reader = document.getElementById("reader");
