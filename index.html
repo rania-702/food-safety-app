@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مفتش سلامة الغذاء</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f8f5;
+            color: #183b2a;
+        }
+
+        .app {
+            max-width: 480px;
+            margin: auto;
+            min-height: 100vh;
+            background: white;
+            padding-bottom: 80px;
+        }
+
+        header {
+            background: #176b4d;
+            color: white;
+            padding: 25px 20px;
+            border-radius: 0 0 25px 25px;
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+            font-size: 24px;
+        }
+
+        header p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .home-page {
+            padding: 20px;
+        }
+
+        .welcome {
+            background: #e9f6ef;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .welcome h2 {
+            margin: 0 0 8px;
+            font-size: 20px;
+        }
+
+        .welcome p {
+            margin: 0;
+            color: #527060;
+        }
+
+        .main-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .main-btn {
+            border: none;
+            padding: 18px 10px;
+            border-radius: 18px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .scan-btn {
+            background: #176b4d;
+            color: white;
+        }
+
+        .inventory-btn {
+            background: #e9f6ef;
+            color: #176b4d;
+        }
+
+        .section-title {
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1px solid #e1eee6;
+            border-radius: 18px;
+            padding: 18px 12px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .feature-card h3 {
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            border-top: 1px solid #e1eee6;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 5px;
+        }
+
+        .nav-btn {
+            border: none;
+            background: none;
+            color: #527060;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .nav-icon {
+            display: block;
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app">
+
+        <header>
+            <h1>🔍 مفتش سلامة الغذاء</h1>
+            <p>خلك مفتش غذاء في مطبخك</p>
+        </header>
+
+        <main class="home-page">
+
+            <div class="welcome">
+                <h2>أهلًا بك في مفتش سلامة الغذاء 👋</h2>
+                <p>خلنا نتأكد إن طعامك آمن وصحي.</p>
+            </div>
+
+            <div class="main-buttons">
+
+                <button class="main-btn scan-btn">
+                    📷 تحليل طعام
+                </button>
+
+                <button class="main-btn inventory-btn">
+                    🧊 مخزوني
+                </button>
+
+            </div>
+
+            <h2 class="section-title">الخدمات</h2>
+
+            <div class="features-grid">
+
+                <div class="feature-card">
+                    <div class="feature-icon">📷</div>
+                    <h3>تحليل الطعام</h3>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🧊</div>
+                    <h3>مخزوني</h3>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🕵️</div>
+                    <h3>مفتش سلامة الغذاء</h3>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔔</div>
+                    <h3>التنبيهات</h3>
+                </div>
+
+            </div>
+
+        </main>
+
+        <nav class="bottom-nav">
+
+            <button class="nav-btn">
+                <span class="nav-icon">🏠</span>
+                الرئيسية
+            </button>
+
+            <button class="nav-btn">
+                <span class="nav-icon">🧊</span>
+                مخزوني
+            </button>
+
+            <button class="nav-btn">
+                <span class="nav-icon">🍳</span>
+                وصفاتي
+            </button>
+
+            <button class="nav-btn">
+                <span class="nav-icon">🕵️</span>
+                المفتش
+            </button>
+
+            <button class="nav-btn">
+                <span class="nav-icon">👤</span>
+                حسابي
+            </button>
+
+        </nav>
+
+    </div>
+
+</body>
+
+</html>
