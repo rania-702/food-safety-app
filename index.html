@@ -223,7 +223,7 @@
     <h1 class="brand">الثلاجة الذكية 🧊✨</h1>
     <p class="welcome">أهلًا بك! خلّينا نحافظ على طعامك آمنًا ونقلل الهدر 💚</p>
   </header>
-  <main class="container"
+  <main class="container"> </main>
   <section id="homePage" class="page active">
   <h2 class="section-title">ملخص مخزونك 📊</h2>
 
@@ -314,7 +314,67 @@
 <section id="inventoryPage" class="page">
   <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
   <h2 class="section-title">📦 مخزوني</h2>
-  <div class="panel">سيُضاف هنا نموذج إدارة المنتجات وحفظها في الخطوة التالية.</div>
+  <div class="panel">
+    <h3>إدارة مخزونك 🧊</h3>
+    <p>اختاري الصفحة اللي تبين تدخلينها</p>
+    <button type="button" onclick="openInventoryPage('inventoryAddPage')"
+      style="width:100%;padding:18px;margin:8px 0;background:#167d58;color:white;border:0;border-radius:12px;font-size:16px;font-weight:bold;">
+      ➕ إضافة منتج جديد
+    </button>
+    <button type="button" onclick="openInventoryPage('inventoryListPage')"
+      style="width:100%;padding:18px;margin:8px 0;background:#e8f5ee;color:#167d58;border:0;border-radius:12px;font-size:16px;font-weight:bold;">
+      📋 منتجاتي
+    </button>
+  </div>
+</section>
+<section id="inventoryAddPage" class="page">
+  <button class="back-button" onclick="openInventoryPage('inventoryPage')">← رجوع لمخزوني</button>
+  <h2 class="section-title">➕ إضافة منتج جديد</h2>
+  <div class="panel">
+    <form id="productForm">
+      <label for="productName">اسم المنتج *</label>
+      <input id="productName" type="text" required placeholder="مثال: حليب"
+        style="width:100%;padding:12px;margin:8px 0 14px;border:1px solid #ddd;border-radius:10px;">
+      <label for="productType">نوع الطعام</label>
+      <select id="productType"
+        style="width:100%;padding:12px;margin:8px 0 14px;border:1px solid #ddd;border-radius:10px;">
+        <option value="ألبان">ألبان</option>
+        <option value="لحوم ودواجن">لحوم ودواجن</option>
+        <option value="خضار وفواكه">خضار وفواكه</option>
+        <option value="حبوب ومعلبات">حبوب ومعلبات</option>
+        <option value="أخرى">أخرى</option>
+      </select>
+      <label for="productQuantity">الكمية</label>
+      <input id="productQuantity" type="number" min="0.01" step="any" value="1" required
+        style="width:100%;padding:12px;margin:8px 0 14px;border:1px solid #ddd;border-radius:10px;">
+      <label for="productLocation">مكان التخزين</label>
+      <select id="productLocation"
+        style="width:100%;padding:12px;margin:8px 0 14px;border:1px solid #ddd;border-radius:10px;">
+        <option value="الثلاجة">الثلاجة</option>
+        <option value="الفريزر">الفريزر</option>
+        <option value="الخزانة">الخزانة</option>
+      </select>
+      <label for="productExpiry">تاريخ انتهاء الصلاحية</label>
+      <input id="productExpiry" type="date"
+        style="width:100%;padding:12px;margin:8px 0 18px;border:1px solid #ddd;border-radius:10px;">
+      <button type="submit"
+        style="width:100%;padding:14px;background:#167d58;color:white;border:0;border-radius:12px;font-weight:bold;">
+        💾 حفظ المنتج
+      </button>
+    </form>
+    <p id="inventoryMessage" role="status"></p>
+  </div>
+</section>
+<section id="inventoryListPage" class="page">
+  <button class="back-button" onclick="openInventoryPage('inventoryPage')">← رجوع لمخزوني</button>
+  <h2 class="section-title">📋 منتجاتي</h2>
+  <div class="panel">
+    <input id="inventorySearch" type="search"
+      placeholder="🔍 ابحثي عن منتج..."
+      aria-label="البحث في المنتجات"
+      style="width:100%;padding:12px;margin:8px 0 14px;border:1px solid #ddd;border-radius:10px;">
+    <div id="productList"></div>
+  </div>
 </section>
 
 <section id="analysisPage" class="page">
@@ -378,40 +438,356 @@
   </nav>
   <script>
     "use strict";
+function openInventoryPage(pageId) {
+  const target = document.getElementById(pageId);
+  if (!target) {
+    alert("الصفحة غير موجودة: " + pageId);
+    return;
+  }
+  document.querySelectorAll(".page").forEach(function(page) {
+    page.classList.remove("active");
+  });
+  target.classList.add("active");
+  document.querySelectorAll(".nav-button").forEach(function(button) {
+    button.classList.remove("active");
+  });
+  window.scrollTo(0, 0);
+}
+    
+    
+const STORAGE_KEY = "smartFridgeProducts";
 
-    function openPage(pageId, clickedButton) {
-      const pages = document.querySelectorAll(".page");
-      const buttons = document.querySelectorAll(".nav-button");
-      const target = document.getElementById(pageId);
+let products = [];
 
-      if (!target) {
-        alert("عذرًا، لم نتمكن من فتح هذا القسم.");
+function loadProducts() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    const parsed = saved ? JSON.parse(saved) : [];
+
+    products = Array.isArray(parsed)
+      ? parsed.filter(p =>
+          p &&
+          typeof p.id === "string" &&
+          typeof p.name === "string"
+        )
+      : [];
+  } catch (error) {
+    products = [];
+    console.error("تعذر قراءة المخزون:", error);
+  }
+
+  renderProducts();
+}
+
+function saveProducts() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+    updateInventoryStats();
+    return true;
+  } catch (error) {
+    showInventoryMessage(
+      "تعذر الحفظ. قد تكون مساحة التخزين ممتلئة.",
+      true
+    );
+    console.error("تعذر حفظ المخزون:", error);
+    return false;
+  }
+}
+
+function showInventoryMessage(message, isError = false) {
+  const box = document.getElementById("inventoryMessage");
+  if (!box) return;
+
+  box.textContent = message;
+  box.style.color = isError ? "#b42318" : "#167d58";
+}
+
+function getToday() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function getExpiryInfo(expiry) {
+  if (!expiry) {
+    return {
+      label: "لم يُسجّل تاريخ الصلاحية",
+      type: "unknown"
+    };
+  }
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(expiry)) {
+    return {
+      label: "تاريخ غير صالح",
+      type: "unknown"
+    };
+  }
+
+  const parsed = new Date(expiry + "T00:00:00");
+
+  if (
+    Number.isNaN(parsed.getTime()) ||
+    parsed.toISOString().slice(0, 10) !== expiry
+  ) {
+    return {
+      label: "تاريخ غير صالح",
+      type: "unknown"
+    };
+  }
+
+  const today = getToday();
+
+  if (expiry < today) {
+    return {
+      label: "انتهى التاريخ — راجعي المنتج",
+      type: "expired"
+    };
+  }
+
+  const difference =
+    (parsed.getTime() -
+      new Date(today + "T00:00:00").getTime()) /
+    86400000;
+
+  if (difference <= 3) {
+    return {
+      label: difference === 0
+        ? "تاريخ الانتهاء اليوم"
+        : `ينتهي خلال ${Math.ceil(difference)} يوم`,
+      type: "soon"
+    };
+  }
+
+  return {
+    label: "لم يحن تاريخ الانتهاء",
+    type: "valid"
+  };
+}
+
+function renderProducts() {
+  const list = document.getElementById("productList");
+  if (!list) return;
+
+  list.replaceChildren();
+
+  const searchInput = document.getElementById("inventorySearch");
+  const query = searchInput
+    ? searchInput.value.trim().toLowerCase()
+    : "";
+
+  const filtered = products
+    .filter(product =>
+      product.name.toLowerCase().includes(query)
+    )
+    .sort((a, b) => {
+      if (!a.expiry) return 1;
+      if (!b.expiry) return -1;
+      return a.expiry.localeCompare(b.expiry);
+    });
+
+  if (filtered.length === 0) {
+    const empty = document.createElement("p");
+    empty.textContent = products.length
+      ? "ما لقينا منتجًا بهذا الاسم."
+      : "مخزونك فارغ حاليًا. أضيفي أول منتج 🌱";
+    list.appendChild(empty);
+    updateInventoryStats();
+    return;
+  }
+
+  filtered.forEach(product => {
+    const card = document.createElement("div");
+    card.style.cssText =
+      "border:1px solid #e4ece6;border-radius:12px;" +
+      "padding:14px;margin:12px 0;";
+
+    const title = document.createElement("h4");
+    title.textContent = product.name;
+    title.style.margin = "0 0 8px";
+
+    const details = document.createElement("p");
+    details.textContent =
+      `النوع: ${product.type} | الكمية: ${product.quantity}` +
+      ` | المكان: ${product.location}`;
+    details.style.lineHeight = "1.8";
+
+    const expiry = document.createElement("p");
+    const info = getExpiryInfo(product.expiry);
+    expiry.textContent = product.expiry
+      ? `${info.label} (${product.expiry})`
+      : info.label;
+    expiry.style.color =
+      info.type === "expired" ? "#b42318" :
+      info.type === "soon" ? "#a15c00" : "#167d58";
+
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.textContent = "🗑️ حذف المنتج";
+    deleteButton.style.cssText =
+      "padding:10px 14px;border:0;border-radius:9px;" +
+      "background:#fff0ee;color:#b42318;";
+
+    deleteButton.addEventListener("click", () => {
+      if (!confirm(`هل تريدين حذف "${product.name}"؟`)) {
         return;
       }
 
-      pages.forEach(function(page) {
-        page.classList.remove("active");
-      });
+      const oldProducts = products;
+      products = products.filter(p => p.id !== product.id);
 
-      target.classList.add("active");
-
-      buttons.forEach(function(button) {
-        button.classList.remove("active");
-      });
-
-      if (clickedButton) {
-        clickedButton.classList.add("active");
-      } else {
-        buttons.forEach(function(button) {
-          const action = button.getAttribute("onclick") || "";
-          if (action.includes("'" + pageId + "'")) {
-            button.classList.add("active");
-          }
-        });
+      if (!saveProducts()) {
+        products = oldProducts;
+        return;
       }
 
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      renderProducts();
+      showInventoryMessage("تم حذف المنتج بنجاح.");
+    });
+
+    card.append(title, details, expiry, deleteButton);
+    list.appendChild(card);
+  });
+
+  updateInventoryStats();
+}
+
+function updateInventoryStats() {
+  const today = getToday();
+
+  const expired = products.filter(p =>
+    p.expiry && p.expiry < today
+  ).length;
+
+  const soon = products.filter(p => {
+    if (!p.expiry || p.expiry < today) return false;
+
+    const days =
+      (new Date(p.expiry + "T00:00:00").getTime() -
+        new Date(today + "T00:00:00").getTime()) /
+      86400000;
+
+    return days <= 3;
+  }).length;
+
+  const totalElement = document.getElementById("totalCount");
+  const soonElement = document.getElementById("soonCount");
+  const expiredElement = document.getElementById("expiredCount");
+  const alertElement = document.getElementById("alertCount");
+
+  if (totalElement) totalElement.textContent = products.length;
+  if (soonElement) soonElement.textContent = soon;
+  if (expiredElement) expiredElement.textContent = expired;
+  if (alertElement) alertElement.textContent = expired + soon;
+}
+
+const productForm = document.getElementById("productForm");
+
+if (productForm) {
+  productForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const name = document.getElementById("productName")
+      .value.trim();
+
+    const type = document.getElementById("productType").value;
+    const quantity = Number(
+      document.getElementById("productQuantity").value
+    );
+    const location = document.getElementById("productLocation").value;
+    const expiry = document.getElementById("productExpiry").value;
+
+    if (!name) {
+      showInventoryMessage("اكتبي اسم المنتج أولًا.", true);
+      return;
     }
+
+    if (!Number.isFinite(quantity) || quantity <= 0) {
+      showInventoryMessage("أدخلي كمية أكبر من صفر.", true);
+      return;
+    }
+
+    if (expiry && isNaN(Date.parse(expiry))) {
+  showInventoryMessage("أدخلي تاريخ صلاحية صحيح.", true);
+  return;
+}
+
+    const product = {
+      id: (crypto.randomUUID
+        ? crypto.randomUUID()
+        : String(Date.now()) + Math.random().toString(16).slice(2)),
+      name,
+      type,
+      quantity,
+      location,
+      expiry
+    };
+
+    products.push(product);
+
+    if (!saveProducts()) {
+      products.pop();
+      return;
+    }
+
+    productForm.reset();
+    renderProducts();
+    showInventoryMessage("تمت إضافة المنتج وحفظه بنجاح ✅");
+  });
+}
+
+const searchBox = document.getElementById("inventorySearch");
+
+if (searchBox) {
+  searchBox.addEventListener("input", renderProducts);
+}
+
+/* تحميل المخزون المحفوظ عند فتح التطبيق */
+loadProducts();
+function openInventoryPage(pageId) {
+  const target = document.getElementById(pageId);
+  if (!target) {
+    alert("الصفحة غير موجودة: " + pageId);
+    return;
+  }
+  document.querySelectorAll(".page").forEach(function(page) {
+    page.classList.remove("active");
+  });
+  target.classList.add("active");
+  document.querySelectorAll(".nav-button").forEach(function(button) {
+    button.classList.remove("active");
+  });
+  window.scrollTo(0, 0);
+}
+window.onerror = function(message) {
+  alert("خطأ في التطبيق: " + message);
+};
+window.openPage = function(pageId, clickedButton) {
+  const target = document.getElementById(pageId);
+
+  if (!target) {
+    alert("الصفحة غير موجودة: " + pageId);
+    return;
+  }
+
+  document.querySelectorAll(".page").forEach(function(page) {
+    page.classList.remove("active");
+  });
+
+  target.classList.add("active");
+
+  document.querySelectorAll(".nav-button").forEach(function(button) {
+    button.classList.remove("active");
+    if (button === clickedButton) {
+      button.classList.add("active");
+    }
+  });
+
+  window.scrollTo(0, 0);
+};
   </script>
+  
 </body>
 </html>
