@@ -395,7 +395,6 @@
     type="file"
     id="foodImage"
     accept="image/*"
-    capture="environment"
     style="display:block;width:100%;padding:10px;background:white;border-radius:10px;"
   />
 
@@ -926,21 +925,62 @@ window.openPage = function(pageId, clickedButton) {
     return "أقدر أساعدك بإرشادات عامة عن سلامة الغذاء، لكن لم أجد إجابة محددة لهذا السؤال. اكتبي اسم الطعام وطريقة حفظه أو سؤالك بشكل أوضح. وإذا كان الطعام مشكوكًا في سلامته، فلا تتذوقيه للتأكد.";
   }
 
-  analyzeButton.addEventListener("click", function () {
-    const text = question.value.trim();
+  analyzeButton.addEventListener("click", async function () {
+  const text = question.value.trim();
+  const imageFile = foodImageInput?.files?.[0];
 
-    if (!text) {
-      answer.textContent = "اكتبي سؤالك عن الطعام أو استخدمي الميكروفون أولًا.";
-      setStatus("بانتظار سؤالك.");
-      question.focus();
-      return;
+  if (!text && !imageFile) {
+    answer.textContent = "اكتبي سؤالك أو اختاري صورة للطعام أولًا.";
+    setStatus("بانتظار سؤالك أو صورتك.");
+    return;
+  }
+
+  analyzeButton.disabled = true;
+  analyzeButton.textContent = "⏳ جاري التحليل...";
+  answer.textContent = "لحظة، أرسل سؤالك إلى الذكاء الاصطناعي... 🤖";
+  setStatus("جارٍ الاتصال بالمساعد الذكي.");
+
+  try {
+    const body = { question: text };
+
+    if (imageFile) {
+      const imageData = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("تعذرت قراءة الصورة."));
+        reader.readAsDataURL(imageFile);
+      });
+
+      body.image = imageData;
+      body.mimeType = imageFile.type;
     }
 
-    lastAnswer = getFoodAnswer(text);
-    answer.textContent = lastAnswer;
-    setStatus("تم إعداد إرشادات سلامة الغذاء. اضغطي على زر الاستماع لسماعها.");
-  });
+    const response = await fetch(
+      "https://smart-fridge-ai.hrp4cwzhp7.workers.dev/",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      }
+    );
 
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "تعذر الحصول على الإجابة.");
+    }
+
+    lastAnswer = result.answer;
+    answer.textContent = lastAnswer;
+    setStatus("وصلت الإجابة من الذكاء الاصطناعي. اضغطي على زر الاستماع لسماعها.");
+  } catch (error) {
+    answer.textContent = "ما قدرنا نتصل بالذكاء الاصطناعي. " + error.message;
+    setStatus("تحققي من الاتصال وحاولي مرة أخرى.");
+  } finally {
+    analyzeButton.disabled = false;
+    analyzeButton.textContent = "🔍 احصلي على الإجابة";
+  }
+});
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
 
