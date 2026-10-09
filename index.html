@@ -1,393 +1,417 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الثلاجة الذكية  </title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f8f5;
-            color: #183b2a;
-        }
-
-        .app {
-            max-width: 480px;
-            margin: auto;
-            min-height: 100vh;
-            background: white;
-            padding-bottom: 80px;
-        }
-
-        header {
-            background: #176b4d;
-            color: white;
-            padding: 25px 20px;
-            border-radius: 0 0 25px 25px;
-        }
-
-        header h1 {
-            margin: 0 0 8px;
-            font-size: 24px;
-        }
-
-        header p {
-            margin: 0;
-            font-size: 14px;
-        }
-
-        .home-page {
-            padding: 20px;
-        }
-
-        .welcome {
-            background: #e9f6ef;
-            padding: 20px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-        }
-
-        .welcome h2 {
-            margin: 0 0 8px;
-            font-size: 20px;
-        }
-
-        .welcome p {
-            margin: 0;
-            color: #527060;
-        }
-
-        .main-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-
-        .main-btn {
-            border: none;
-            padding: 18px 10px;
-            border-radius: 18px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .scan-btn {
-            background: #176b4d;
-            color: white;
-        }
-
-        .inventory-btn {
-            background: #e9f6ef;
-            color: #176b4d;
-        }
-
-        .section-title {
-            margin-bottom: 12px;
-            font-size: 18px;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .feature-card {
-            background: white;
-            border: 1px solid #e1eee6;
-            border-radius: 18px;
-            padding: 18px 12px;
-            text-align: center;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .feature-icon {
-            font-size: 30px;
-            margin-bottom: 10px;
-        }
-
-        .feature-card h3 {
-            margin: 0;
-            font-size: 15px;
-        }
-
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 480px;
-            background: white;
-            border-top: 1px solid #e1eee6;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 5px;
-        }
-
-        .nav-btn {
-            border: none;
-            background: none;
-            color: #527060;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .nav-icon {
-            display: block;
-            font-size: 22px;
-            margin-bottom: 4px;
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-</head>
-
-<body>
-    <div class="app">
-
-        <header>
-            <h1>🔍 الثلاجة الذكية </h1>
-            <p>خلي ثلاجتك ذكية </p>
-        </header>
-
-        <main class="home-page">
-
-            <div class="welcome">
-                <h2>أهلًا بك في الثلاجة الذكية  👋</h2>
-                <p>خلنا نتأكد إن طعامك آمن وصحي.</p>
-            </div>
-
-            <div class="main-buttons">
-
-                <button class="main-btn scan-btn" type="button" onclick="openCamera()">
-    📷 إضافة منتج
-
-                </button>
-
-                <button class="main-btn inventory-btn">
-                    🧊 مخزوني
-                </button>
-
-            </div>
-
-            <h2 class="section-title">الخدمات</h2>
-
-            <div class="features-grid">
-
-    <div class="feature-card">
-        <div class="feature-icon">📷</div>
-        <h3>تحليل الطعام</h3>
-    </div>
-
-    <div class="feature-card">
-        <div class="feature-icon">🕵️</div>
-        <h3>الثلاجة الذكية </h3>
-    </div>
-
-    <div class="feature-card">
-        <div class="feature-icon">🔔</div>
-        <h3>التنبيهات</h3>
-    </div>
-
-</div>
-<div id="reader" style="display:none;"></div>
-
-        </main>
-<div id="inventoryPage" style="display:none; padding:20px;">
-    <h2>🧊 مخزوني</h2>
-    <div id="inventoryList"></div>
-</div>
-        <nav class="bottom-nav">
-
-            <button class="nav-btn">
-                <span class="nav-icon">🏠</span>
-                الرئيسية
-            </button>
-
-            <button class="nav-btn">
-                <span class="nav-icon">🍳</span>
-                وصفاتي
-            </button>
-
-            <button class="nav-btn">
-                <span class="nav-icon">🕵️</span>
-                المفتش
-            </button>
-
-            <button class="nav-btn">
-                <span class="nav-icon">👤</span>
-                حسابي
-            </button>
-
-        </nav>
-
-    </div>
-<script>
-const inventoryButton = document.querySelector(".inventory-btn");
-
-inventoryButton.addEventListener("click", function () {
-
-    const homePage = document.querySelector(".home-page");
-    const inventoryPage = document.getElementById("inventoryPage");
-    const inventoryList = document.getElementById("inventoryList");
-
-    const inventory =
-        JSON.parse(localStorage.getItem("inventory")) || [];
-
-    homePage.style.display = "none";
-    inventoryPage.style.display = "block";
-
-    if (inventory.length === 0) {
-        inventoryList.innerHTML =
-            "<p>🧊 مخزوني فارغ حاليًا</p>";
-        return;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#167d58">
+  <title>الثلاجة الذكية 🧊✨</title>
+  <style>
+    :root {
+      --green: #167d58;
+      --light-green: #eaf7ef;
+      --white: #ffffff;
+      --background: #f5f8f5;
+      --text: #20352b;
+      --muted: #718078;
+      --border: #e4ece6;
     }
 
-    inventoryList.innerHTML = "";
+    * {
+      box-sizing: border-box;
+    }
 
-    inventory.forEach(function (item) {
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Tahoma, Arial, sans-serif;
+      background: var(--background);
+      color: var(--text);
+    }
 
-        const card = document.createElement("div");
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
 
-        card.style.background = "#e9f6ef";
-        card.style.padding = "18px";
-        card.style.borderRadius = "18px";
-        card.style.marginBottom = "12px";
+    .app-header {
+      background: var(--green);
+      color: white;
+      padding: 24px 18px 30px;
+      border-radius: 0 0 25px 25px;
+    }
 
-        let expiryMessage = "⚪ تاريخ الانتهاء غير واضح";
-        let expiryColor = "#777";
+    .brand {
+      font-size: 23px;
+      font-weight: 800;
+      margin: 0 0 8px;
+    }
 
-        if (item.expiry && item.expiry !== "غير محدد") {
+    .welcome {
+      font-size: 14px;
+      opacity: 0.95;
+      margin: 0;
+    }
 
-            const expiryDate = new Date(item.expiry);
+    .container {
+      width: 100%;
+      max-width: 700px;
+      padding: 18px 15px 100px;
+      margin: auto;
+    }
 
-            if (!isNaN(expiryDate.getTime())) {
+    .section-title {
+      font-size: 19px;
+      margin: 8px 0 14px;
+    }
 
-                const today = new Date();
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
 
-                today.setHours(0, 0, 0, 0);
-                expiryDate.setHours(0, 0, 0, 0);
+    .stat-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 17px 14px;
+    }
 
-                const difference =
-                    expiryDate - today;
+    .stat-icon {
+      font-size: 25px;
+    }
 
-                const daysLeft =
-                    Math.ceil(
-                        difference /
-                        (1000 * 60 * 60 * 24)
-                    );
+    .stat-number {
+      display: block;
+      font-size: 27px;
+      font-weight: 800;
+      margin: 7px 0 4px;
+    }
 
-                if (daysLeft < 0) {
+    .stat-label {
+      color: var(--muted);
+      font-size: 13px;
+    }
 
-                    expiryMessage =
-                        "🔴 منتهي الصلاحية";
+    .menu {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+    }
 
-                    expiryColor = "#c62828";
+    .menu-button {
+      min-height: 100px;
+      padding: 15px 10px;
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      text-align: right;
+      transition: 0.2s;
+    }
 
-                } else if (daysLeft <= 7) {
+    .menu-button:active {
+      transform: scale(0.98);
+    }
 
-                    expiryMessage =
-                        "🟡 ينتهي خلال " +
-                        daysLeft +
-                        " يوم";
+    .menu-button .emoji {
+      display: block;
+      font-size: 27px;
+      margin-bottom: 10px;
+    }
 
-                    expiryColor = "#f57c00";
+    .menu-button strong {
+      display: block;
+      font-size: 14px;
+    }
 
-                } else {
+    .menu-button small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
 
-                    expiryMessage =
-                        "🟢 صالح — باقي " +
-                        daysLeft +
-                        " يوم";
+    .tip {
+      margin-top: 23px;
+      padding: 17px;
+      background: var(--light-green);
+      border-radius: 16px;
+      line-height: 1.8;
+      font-size: 14px;
+    }
 
-                    expiryColor = "#2e7d32";
-                }
-            }
-        }
+    .tip strong {
+      color: var(--green);
+    }
 
-        card.innerHTML =
-            "<h3>🧊 " + item.name + "</h3>" +
-            "<p>العلامة: " + item.brand + "</p>" +
-            "<p>🏷️ الباركود: " + item.barcode + "</p>" +
-            "<p>📅 تاريخ الانتهاء: " + item.expiry + "</p>" +
-            "<p style='color:" + expiryColor +
-            "; font-weight:bold;'>" +
-            expiryMessage +
-            "</p>";
+    .page {
+      display: none;
+    }
 
-        inventoryList.appendChild(card);
-    });
-});
-</script>
+    .page.active {
+      display: block;
+    }
 
-  
-<script>
-function openCamera() {
-    const reader = document.getElementById("reader");
-    reader.style.display = "block";
+    .panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 18px;
+      margin-top: 15px;
+    }
 
-    const scanner = new Html5Qrcode("reader");
+    .back-button {
+      background: var(--light-green);
+      color: var(--green);
+      border: 0;
+      padding: 10px 16px;
+      border-radius: 11px;
+      margin-bottom: 12px;
+    }
 
-    scanner.start(
-        { facingMode: "environment" },
-        {
-            fps: 15,
-            qrbox: { width: 300, height: 150 },
-            aspectRatio: 1.777
-        },
-        function(decodedText) {
-            scanner.stop();
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      display: flex;
+      justify-content: space-around;
+      gap: 4px;
+      padding: 10px 4px calc(10px + env(safe-area-inset-bottom));
+      background: white;
+      border-top: 1px solid var(--border);
+      z-index: 10;
+    }
 
-            fetch("https://world.openfoodfacts.org/api/v2/product/" + decodedText + ".json")
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 1) {
-                        const product = data.product;
+    .nav-button {
+      flex: 1;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 11px;
+      padding: 7px 2px;
+      border-radius: 10px;
+    }
 
-                       const expiryDate = prompt("📅 أدخلي تاريخ انتهاء المنتج:");
+    .nav-button span {
+      display: block;
+      font-size: 21px;
+      margin-bottom: 4px;
+    }
 
-const productName = product.product_name_ar || product.product_name || "غير معروف";
-const brand = product.brands || "غير معروف";
+    .nav-button.active {
+      background: var(--light-green);
+      color: var(--green);
+      font-weight: 700;
+    }
 
-const savedProduct = {
-    name: productName,
-    brand: brand,
-    barcode: decodedText,
-    expiry: expiryDate || "غير محدد"
-};
+    @media (min-width: 600px) {
+      .stats {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
 
-let inventory = JSON.parse(localStorage.getItem("inventory")) || [];
-inventory.push(savedProduct);
-localStorage.setItem("inventory", JSON.stringify(inventory));
+      .menu {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1 class="brand">الثلاجة الذكية 🧊✨</h1>
+    <p class="welcome">أهلًا بك! خلّينا نحافظ على طعامك آمنًا ونقلل الهدر 💚</p>
+  </header>
+  <main class="container"
+  <section id="homePage" class="page active">
+  <h2 class="section-title">ملخص مخزونك 📊</h2>
 
-alert(
-    "✅ تم حفظ المنتج في مخزوني\n\n" +
-    "الاسم: " + productName + "\n" +
-    "العلامة: " + brand + "\n" +
-    "تاريخ الانتهاء: " + savedProduct.expiry
-);
-                    } else {
-                        alert("❌ المنتج غير موجود في قاعدة البيانات");
-                    }
-                })
-                .catch(() => {
-                    alert("⚠️ تعذر الاتصال بقاعدة بيانات المنتجات");
-                });
-        },
-        function() {}
-    );
-}
-</script>
+  <div class="stats">
+    <div class="stat-card">
+      <span class="stat-icon">📦</span>
+      <strong class="stat-number" id="totalCount">0</strong>
+      <span class="stat-label">إجمالي المنتجات</span>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-icon">⏳</span>
+      <strong class="stat-number" id="soonCount">0</strong>
+      <span class="stat-label">قريبة الانتهاء</span>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-icon">⚠️</span>
+      <strong class="stat-number" id="expiredCount">0</strong>
+      <span class="stat-label">منتهية التاريخ</span>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-icon">🔔</span>
+      <strong class="stat-number" id="alertCount">0</strong>
+      <span class="stat-label">التنبيهات</span>
+    </div>
+  </div>
+
+  <h2 class="section-title">خدمات التطبيق</h2>
+
+  <div class="menu">
+    <button class="menu-button" onclick="openPage('inventoryPage')">
+      <span class="emoji">📦</span>
+      <strong>مخزوني</strong>
+      <small>إدارة المنتجات والصلاحية</small>
+    </button>
+
+    <button class="menu-button" onclick="openPage('analysisPage')">
+      <span class="emoji">🔍</span>
+      <strong>تحليل الطعام</strong>
+      <small>معلومات الحفظ والسلامة</small>
+    </button>
+
+    <button class="menu-button" onclick="openPage('barcodePage')">
+      <span class="emoji">📷</span>
+      <strong>مسح الباركود</strong>
+      <small>التعرف على المنتجات</small>
+    </button>
+
+    <button class="menu-button" onclick="openPage('recipesPage')">
+      <span class="emoji">🍲</span>
+      <strong>وصفاتي</strong>
+      <small>أفكار من مكونات مخزونك</small>
+    </button>
+
+    <button class="menu-button" onclick="openPage('inspectorPage')">
+      <span class="emoji">🛡️</span>
+      <strong>مفتش سلامة الغذاء</strong>
+      <small>اختبر معلوماتك</small>
+    </button>
+
+    <button class="menu-button" onclick="openPage('assistantPage')">
+      <span class="emoji">🤖</span>
+      <strong>المساعد الذكي</strong>
+      <small>مساعدة تجريبية</small>
+    </button>
+
+    <button class="menu-button" onclick="openPage('notificationsPage')">
+      <span class="emoji">🔔</span>
+      <strong>التنبيهات</strong>
+      <small>متابعة مخزونك</small>
+    </button>
+
+    <button class="menu-button" onclick="openPage('accountPage')">
+      <span class="emoji">👤</span>
+      <strong>حسابي</strong>
+      <small>الإعدادات والبيانات</small>
+    </button>
+  </div>
+
+  <div class="tip">
+    <strong>💡 نصيحة سلامة الغذاء</strong>
+    <p>افصلي اللحوم والدواجن النيئة عن الأطعمة الجاهزة للأكل، واحفظي كل نوع بطريقة مناسبة. تذكّري أن التاريخ وحده لا يضمن سلامة الطعام إذا أسيء تخزينه.</p>
+  </div>
+</section>
+
+<section id="inventoryPage" class="page">
+  <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
+  <h2 class="section-title">📦 مخزوني</h2>
+  <div class="panel">سيُضاف هنا نموذج إدارة المنتجات وحفظها في الخطوة التالية.</div>
+</section>
+
+<section id="analysisPage" class="page">
+  <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
+  <h2 class="section-title">🔍 تحليل الطعام</h2>
+  <div class="panel">سيُضاف هنا البحث عن الطعام وإرشادات سلامة الغذاء.</div>
+</section>
+
+<section id="barcodePage" class="page">
+  <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
+  <h2 class="section-title">📷 مسح الباركود</h2>
+  <div class="panel">سيُضاف هنا تشغيل الكاميرا والتعرف على المنتجات.</div>
+</section>
+
+<section id="recipesPage" class="page">
+  <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
+  <h2 class="section-title">🍲 وصفاتي</h2>
+  <div class="panel">سيُضاف هنا اقتراح الوصفات بحسب المخزون.</div>
+</section>
+
+<section id="inspectorPage" class="page">
+  <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
+  <h2 class="section-title">🛡️ مفتش سلامة الغذاء</h2>
+  <div class="panel">سيُضاف هنا الاختبار التفاعلي والأسئلة.</div>
+</section>
+
+<section id="assistantPage" class="page">
+  <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
+  <h2 class="section-title">🤖 المساعد الذكي</h2>
+  <div class="panel">هذه واجهة تجريبية، ولم يتم ربطها حتى الآن بنموذج ذكاء اصطناعي.</div>
+</section>
+
+<section id="notificationsPage" class="page">
+  <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
+  <h2 class="section-title">🔔 التنبيهات</h2>
+  <div class="panel">ستظهر هنا تنبيهات المخزون بعد تفعيل إدارة المنتجات.</div>
+</section>
+
+<section id="accountPage" class="page">
+  <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
+  <h2 class="section-title">👤 حسابي</h2>
+  <div class="panel">ستُضاف هنا إعدادات التطبيق والنسخ الاحتياطي.</div>
+</section>
+</main>
+<nav class="bottom-nav" aria-label="التنقل الرئيسي">
+    <button class="nav-button active" onclick="openPage('homePage', this)">
+      <span>🏠</span>الرئيسية
+    </button>
+    <button class="nav-button" onclick="openPage('inventoryPage', this)">
+      <span>📦</span>مخزوني
+    </button>
+    <button class="nav-button" onclick="openPage('analysisPage', this)">
+      <span>🔍</span>التحليل
+    </button>
+    <button class="nav-button" onclick="openPage('recipesPage', this)">
+      <span>🍲</span>وصفاتي
+    </button>
+    <button class="nav-button" onclick="openPage('accountPage', this)">
+      <span>👤</span>حسابي
+    </button>
+  </nav>
+  <script>
+    "use strict";
+
+    function openPage(pageId, clickedButton) {
+      const pages = document.querySelectorAll(".page");
+      const buttons = document.querySelectorAll(".nav-button");
+      const target = document.getElementById(pageId);
+
+      if (!target) {
+        alert("عذرًا، لم نتمكن من فتح هذا القسم.");
+        return;
+      }
+
+      pages.forEach(function(page) {
+        page.classList.remove("active");
+      });
+
+      target.classList.add("active");
+
+      buttons.forEach(function(button) {
+        button.classList.remove("active");
+      });
+
+      if (clickedButton) {
+        clickedButton.classList.add("active");
+      } else {
+        buttons.forEach(function(button) {
+          const action = button.getAttribute("onclick") || "";
+          if (action.includes("'" + pageId + "'")) {
+            button.classList.add("active");
+          }
+        });
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  </script>
 </body>
-
 </html>
