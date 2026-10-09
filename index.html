@@ -378,9 +378,53 @@
 </section>
 
 <section id="analysisPage" class="page">
-  <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
+  <button class="back-button" onclick="openPage('homePage')">
+    ← الرئيسية
+  </button>
+
   <h2 class="section-title">🔍 تحليل الطعام</h2>
-  <div class="panel">سيُضاف هنا البحث عن الطعام وإرشادات سلامة الغذاء.</div>
+
+  <div class="panel">
+    <h3>🍎 اسألي عن طعامك</h3>
+    <p>اكتبي سؤالك أو اضغطي على الميكروفون وتكلمي.</p>
+
+    <label for="foodQuestion">سؤالك عن الطعام</label>
+
+    <textarea id="foodQuestion"
+      placeholder="مثال: كيف أحفظ الحليب؟"
+      style="width:100%;min-height:100px;padding:14px;margin:10px 0;border:1px solid #ddd;border-radius:12px;font:inherit;">
+    </textarea>
+
+    <button type="button" id="voiceInputButton"
+      style="width:100%;padding:16px;margin:6px 0;background:#e8f5ee;color:#167d58;border:0;border-radius:12px;font-size:17px;font-weight:bold;">
+      🎙️ تحدثي الآن
+    </button>
+
+    <button type="button" id="analyzeFoodButton"
+      style="width:100%;padding:16px;margin:6px 0;background:#167d58;color:white;border:0;border-radius:12px;font-size:17px;font-weight:bold;">
+      🔍 احصلي على الإجابة
+    </button>
+
+    <div id="foodAnswer" aria-live="polite"
+      style="margin-top:16px;padding:15px;background:#f5f8f5;border-radius:12px;line-height:2;font-size:17px;">
+      ستظهر الإجابة هنا 💚
+    </div>
+
+    <button type="button" id="speakAnswerButton"
+      style="width:100%;padding:14px;margin-top:10px;background:#fff;color:#167d58;border:1px solid #167d58;border-radius:12px;font-size:17px;font-weight:bold;">
+      🔊 استمعي للإجابة
+    </button>
+
+    <button type="button" id="stopVoiceButton"
+      style="width:100%;padding:12px;margin-top:8px;background:#fff0ee;color:#b42318;border:0;border-radius:12px;font-size:16px;">
+      ⏹️ إيقاف الصوت
+    </button>
+
+    <p id="voiceStatus" role="status"
+      style="font-size:14px;color:#718078;line-height:1.8;">
+      يمكنك استخدام الكتابة أو الصوت.
+    </p>
+  </div>
 </section>
 
 <section id="barcodePage" class="page">
@@ -787,6 +831,196 @@ window.openPage = function(pageId, clickedButton) {
 
   window.scrollTo(0, 0);
 };
+/* تفعيل الصوت وتحليل الطعام في الثلاجة الذكية */
+(function () {
+  if (window.smartFridgeVoiceReady) return;
+  window.smartFridgeVoiceReady = true;
+
+  const question = document.getElementById("foodQuestion");
+  const answer = document.getElementById("foodAnswer");
+  const voiceButton = document.getElementById("voiceInputButton");
+  const analyzeButton = document.getElementById("analyzeFoodButton");
+  const speakButton = document.getElementById("speakAnswerButton");
+  const stopButton = document.getElementById("stopVoiceButton");
+  const status = document.getElementById("voiceStatus");
+
+  if (!question || !answer || !voiceButton ||
+      !analyzeButton || !speakButton || !stopButton || !status) {
+    window.smartFridgeVoiceReady = false;
+    return;
+  }
+
+  let recognition = null;
+  let lastAnswer = "";
+
+  function setStatus(message) {
+    status.textContent = message;
+  }
+
+  function getFoodAnswer(text) {
+    const q = text.toLowerCase().replace(/[أإآ]/g, "ا");
+
+    if (/حليب|لبن|زبادي|ألبان/.test(q)) {
+      return "احفظي الحليب ومنتجات الألبان في الثلاجة عند 4 درجات مئوية أو أقل، وأعيديها للثلاجة مباشرة بعد الاستخدام. إذا بقيت خارج التبريد أكثر من ساعتين، فالأكثر أمانًا التخلص منها.";
+    }
+
+    if (/دجاج|لحوم|لحم ني|لحم خام|سمك|نيء|نيئ/.test(q)) {
+      return "احفظي اللحوم النيئة في وعاء محكم أسفل الثلاجة حتى لا تتسرب سوائلها إلى الأطعمة الأخرى. افصليها عن الطعام الجاهز للأكل، واطهي الدجاج جيدًا حتى تصل حرارته الداخلية إلى 74 درجة مئوية.";
+    }
+
+    if (/بقايا|رز|ارز|طبخ|مطبوخ|وجبة|اكل مطبوخ|طعام مطبوخ/.test(q)) {
+      return "ضعي بقايا الطعام في الثلاجة خلال ساعتين من الطبخ، في أوعية نظيفة ومغطاة. قسّمي الكميات الكبيرة إلى أوعية صغيرة لتبرد بسرعة، واستخدميها عادة خلال 3 إلى 4 أيام.";
+    }
+
+    if (/انتهاء|منتهي|الصلاحيه|صلاحية|تاريخ الصلاحية|منتهية/.test(q)) {
+      return "تحققي من تاريخ الصلاحية وتعليمات التخزين على العبوة. إذا انتهت الصلاحية، فلا تتناولي المنتج إذا كان ملصقه يمنع ذلك. الرائحة والشكل وحدهما لا يكفيان للحكم على سلامة الطعام.";
+    }
+
+    if (/تجميد|فريزر|مجمد|تجميد الطعام/.test(q)) {
+      return "احفظي الفريزر عند 18 درجة مئوية تحت الصفر أو أقل. غلّفي الطعام جيدًا واكتبي تاريخ التجميد عليه. أذيبي الطعام داخل الثلاجة أو باستخدام طريقة آمنة، وليس على سطح المطبخ.";
+    }
+
+    if (/ثلاجه|حرارة الثلاجة|درجه حراره|درجة حرارة/.test(q)) {
+      return "اضبطي الثلاجة على 4 درجات مئوية أو أقل، والفريزر على 18 درجة مئوية تحت الصفر أو أقل. استخدمي مقياس حرارة للتأكد من أن درجة الحرارة مناسبة.";
+    }
+
+    if (/علبة|معلبات|معلب|انتفاخ|انتفخت/.test(q)) {
+      return "لا تستخدمي علبة معلبات منتفخة أو متسربة أو متضررة بشدة أو ذات رائحة غير طبيعية. لا تتذوقي الطعام للتأكد من سلامته، وتخلّصي من العبوة المشكوك فيها بطريقة آمنة.";
+    }
+
+    if (/تلوث|تلوث متبادل|اغسل|غسل اليد|نظافه|نظافة/.test(q)) {
+      return "اغسلي يديك بالماء والصابون قبل تحضير الطعام وبعد التعامل مع اللحوم النيئة. استخدمي ألواح تقطيع وأدوات منفصلة للأطعمة النيئة والجاهزة للأكل، ونظفي الأسطح جيدًا.";
+    }
+
+    if (/بيض/.test(q)) {
+      return "احفظي البيض في الثلاجة، وتجنبي استخدام البيض المتشقق أو المتسخ بشدة. اطهي البيض جيدًا، واغسلي يديك والأدوات بعد التعامل معه.";
+    }
+
+    if (/فواكه|خضار|خضروات/.test(q)) {
+      return "اغسلي الفواكه والخضروات تحت ماء جارٍ نظيف قبل تناولها أو تقطيعها. افصليها عن اللحوم النيئة، واحفظي المنتجات المقطعة في الثلاجة داخل أوعية نظيفة.";
+    }
+
+    if (/خارج الثلاجه|برا الثلاجه|درجة الغرفة|حرارة الغرفة/.test(q)) {
+      return "الأطعمة القابلة للتلف لا ينبغي أن تبقى في درجة حرارة الغرفة أكثر من ساعتين، أو ساعة واحدة إذا تجاوزت الحرارة 32 درجة مئوية. إذا تجاوزت المدة، فالأكثر أمانًا التخلص منها.";
+    }
+
+    return "أقدر أساعدك بإرشادات عامة عن سلامة الغذاء، لكن لم أجد إجابة محددة لهذا السؤال. اكتبي اسم الطعام وطريقة حفظه أو سؤالك بشكل أوضح. وإذا كان الطعام مشكوكًا في سلامته، فلا تتذوقيه للتأكد.";
+  }
+
+  analyzeButton.addEventListener("click", function () {
+    const text = question.value.trim();
+
+    if (!text) {
+      answer.textContent = "اكتبي سؤالك عن الطعام أو استخدمي الميكروفون أولًا.";
+      setStatus("بانتظار سؤالك.");
+      question.focus();
+      return;
+    }
+
+    lastAnswer = getFoodAnswer(text);
+    answer.textContent = lastAnswer;
+    setStatus("تم إعداد إرشادات سلامة الغذاء. اضغطي على زر الاستماع لسماعها.");
+  });
+
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = "ar-SA";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = function () {
+      setStatus("أستمع إليك الآن... تفضلي بالكلام 🎙️");
+      voiceButton.disabled = true;
+      voiceButton.textContent = "🎙️ جاري الاستماع...";
+    };
+
+    recognition.onresult = function (event) {
+      const spokenText = event.results[0][0].transcript;
+      question.value = spokenText;
+      setStatus("وصلني سؤالك. اضغطي «احصلي على الإجابة».");
+    };
+
+    recognition.onerror = function (event) {
+      if (event.error === "not-allowed") {
+        setStatus("يرجى السماح للمتصفح باستخدام الميكروفون من إعدادات الموقع.");
+      } else {
+        setStatus("لم أتمكن من التقاط الصوت. حاولي مرة أخرى أو اكتبي سؤالك.");
+      }
+    };
+
+    recognition.onend = function () {
+      voiceButton.disabled = false;
+      voiceButton.textContent = "🎙️ تحدثي الآن";
+    };
+
+    voiceButton.addEventListener("click", function () {
+      try {
+        recognition.start();
+      } catch (error) {
+        setStatus("انتظري لحظة ثم حاولي تشغيل الميكروفون مرة أخرى.");
+      }
+    });
+  } else {
+    voiceButton.addEventListener("click", function () {
+      setStatus("التعرف على الصوت غير مدعوم في هذا المتصفح. جربي فتح التطبيق في متصفح يدعم هذه الميزة، أو اكتبي سؤالك.");
+    });
+  }
+
+  speakButton.addEventListener("click", function () {
+    if (!lastAnswer) {
+      setStatus("اكتبي سؤالك واضغطي «احصلي على الإجابة» أولًا.");
+      return;
+    }
+
+    if (!("speechSynthesis" in window)) {
+      setStatus("ميزة قراءة الإجابة صوتيًا غير مدعومة في هذا المتصفح.");
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(lastAnswer);
+    utterance.lang = "ar-SA";
+    utterance.rate = 0.85;
+
+    const voices = window.speechSynthesis.getVoices();
+    const arabicVoice = voices.find(function (voice) {
+      return voice.lang && voice.lang.toLowerCase().startsWith("ar");
+    });
+
+    if (arabicVoice) utterance.voice = arabicVoice;
+
+    utterance.onstart = function () {
+      setStatus("يتم الآن قراءة الإجابة بصوت مسموع 🔊");
+    };
+
+    utterance.onend = function () {
+      setStatus("انتهت قراءة الإجابة.");
+    };
+
+    utterance.onerror = function () {
+      setStatus("تعذرت قراءة الإجابة صوتيًا. يمكنك قراءة النص الظاهر.");
+    };
+
+    window.speechSynthesis.speak(utterance);
+  });
+
+  stopButton.addEventListener("click", function () {
+    if (recognition) {
+      try {
+        recognition.stop();
+      } catch (error) {}
+    }
+
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+
+    setStatus("تم إيقاف الصوت.");
+  });
+})();
   </script>
   
 </body>
