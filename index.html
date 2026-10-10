@@ -1,1161 +1,1300 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#167d58">
-  <title>الثلاجة الذكية 🧊✨</title>
-  <style>
-    :root {
-      --green: #167d58;
-      --light-green: #eaf7ef;
-      --white: #ffffff;
-      --background: #f5f8f5;
-      --text: #20352b;
-      --muted: #718078;
-      --border: #e4ece6;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#167d58">
+<title>الثلاجة الذكية 🧊✨</title>
 
-    * {
-      box-sizing: border-box;
-    }
+<style>
+:root {
+  --green: #167d58;
+  --light-green: #e9f6ef;
+  --dark: #183b2d;
+  --white: #ffffff;
+  --bg: #f5f8f6;
+  --red: #d94343;
+  --orange: #e99524;
+  --blue: #3778c2;
+}
 
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont,
-        "Segoe UI", Tahoma, Arial, sans-serif;
-      background: var(--background);
-      color: var(--text);
-    }
+* {
+  box-sizing: border-box;
+}
 
-    button {
-      font: inherit;
-      cursor: pointer;
-    }
+body {
+  margin: 0;
+  font-family: Arial, Tahoma, sans-serif;
+  background: var(--bg);
+  color: var(--dark);
+  font-size: 16px;
+}
 
-    .app-header {
-      background: var(--green);
-      color: white;
-      padding: 24px 18px 30px;
-      border-radius: 0 0 25px 25px;
-    }
+button, input, select, textarea {
+  font: inherit;
+}
 
-    .brand {
-      font-size: 23px;
-      font-weight: 800;
-      margin: 0 0 8px;
-    }
+button {
+  cursor: pointer;
+}
 
-    .welcome {
-      font-size: 14px;
-      opacity: 0.95;
-      margin: 0;
-    }
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #81c7a7;
+  outline-offset: 2px;
+}
 
-    .container {
-      width: 100%;
-      max-width: 700px;
-      padding: 18px 15px 100px;
-      margin: auto;
-    }
+header {
+  background: var(--green);
+  color: white;
+  padding: 18px 16px;
+  border-radius: 0 0 24px 24px;
+}
 
-    .section-title {
-      font-size: 19px;
-      margin: 8px 0 14px;
-    }
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 24px;
-    }
+header h1 {
+  font-size: 23px;
+  margin: 0 0 8px;
+}
 
-    .stat-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 17px;
-      padding: 17px 14px;
-    }
+header p {
+  margin: 0;
+  line-height: 1.7;
+}
 
-    .stat-icon {
-      font-size: 25px;
-    }
+.header-button {
+  background: white;
+  color: var(--green);
+  border: 0;
+  border-radius: 12px;
+  padding: 10px;
+  min-width: 44px;
+}
 
-    .stat-number {
-      display: block;
-      font-size: 27px;
-      font-weight: 800;
-      margin: 7px 0 4px;
-    }
+.container {
+  width: 100%;
+  max-width: 760px;
+  margin: auto;
+  padding: 16px 14px 95px;
+}
 
-    .stat-label {
-      color: var(--muted);
-      font-size: 13px;
-    }
+.page {
+  display: none;
+}
 
-    .menu {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 11px;
-    }
+.page.active {
+  display: block;
+  animation: appear .2s ease;
+}
 
-    .menu-button {
-      min-height: 100px;
-      padding: 15px 10px;
-      background: white;
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      text-align: right;
-      transition: 0.2s;
-    }
+@keyframes appear {
+  from { opacity: .5; }
+  to { opacity: 1; }
+}
 
-    .menu-button:active {
-      transform: scale(0.98);
-    }
+h2 {
+  font-size: 22px;
+  margin: 10px 0 16px;
+}
 
-    .menu-button .emoji {
-      display: block;
-      font-size: 27px;
-      margin-bottom: 10px;
-    }
+h3 {
+  font-size: 18px;
+}
 
-    .menu-button strong {
-      display: block;
-      font-size: 14px;
-    }
+p {
+  line-height: 1.8;
+}
 
-    .menu-button small {
-      display: block;
-      margin-top: 5px;
-      color: var(--muted);
-      font-size: 12px;
-    }
+.card {
+  background: white;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 3px 12px #183b2d0c;
+}
 
-    .tip {
-      margin-top: 23px;
-      padding: 17px;
-      background: var(--light-green);
-      border-radius: 16px;
-      line-height: 1.8;
-      font-size: 14px;
-    }
+.welcome {
+  background: var(--light-green);
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
 
-    .tip strong {
-      color: var(--green);
-    }
+.welcome h2 {
+  color: var(--green);
+  margin-top: 0;
+}
 
-    .page {
-      display: none;
-    }
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
 
-    .page.active {
-      display: block;
-    }
+.stat {
+  background: white;
+  border-radius: 16px;
+  padding: 14px;
+  text-align: center;
+  box-shadow: 0 3px 10px #183b2d0b;
+}
 
-    .panel {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 17px;
-      padding: 18px;
-      margin-top: 15px;
-    }
+.stat strong {
+  display: block;
+  font-size: 26px;
+  color: var(--green);
+  margin-bottom: 7px;
+}
 
-    .back-button {
-      background: var(--light-green);
-      color: var(--green);
-      border: 0;
-      padding: 10px 16px;
-      border-radius: 11px;
-      margin-bottom: 12px;
-    }
+.stat span {
+  font-size: 14px;
+}
 
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      right: 0;
-      left: 0;
-      display: flex;
-      justify-content: space-around;
-      gap: 4px;
-      padding: 10px 4px calc(10px + env(safe-area-inset-bottom));
-      background: white;
-      border-top: 1px solid var(--border);
-      z-index: 10;
-    }
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
 
-    .nav-button {
-      flex: 1;
-      border: 0;
-      background: transparent;
-      color: var(--muted);
-      font-size: 11px;
-      padding: 7px 2px;
-      border-radius: 10px;
-    }
+.service-button {
+  border: 1px solid #e3eee7;
+  background: white;
+  border-radius: 18px;
+  padding: 18px 10px;
+  min-height: 115px;
+  color: var(--dark);
+  text-align: center;
+  box-shadow: 0 3px 10px #183b2d0b;
+}
 
-    .nav-button span {
-      display: block;
-      font-size: 21px;
-      margin-bottom: 4px;
-    }
+.service-button:active {
+  transform: scale(.98);
+}
 
-    .nav-button.active {
-      background: var(--light-green);
-      color: var(--green);
-      font-weight: 700;
-    }
+.service-icon {
+  display: block;
+  font-size: 30px;
+  margin-bottom: 9px;
+}
 
-    @media (min-width: 600px) {
-      .stats {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-      }
+.service-button strong {
+  display: block;
+  font-size: 16px;
+}
 
-      .menu {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-  </style>
+.service-button small {
+  display: block;
+  margin-top: 7px;
+  color: #65776d;
+  line-height: 1.5;
+}
+
+.primary-button,
+.secondary-button,
+.danger-button {
+  border: 0;
+  border-radius: 12px;
+  padding: 13px 16px;
+  min-height: 46px;
+  font-weight: bold;
+}
+
+.primary-button {
+  background: var(--green);
+  color: white;
+}
+
+.secondary-button {
+  background: var(--light-green);
+  color: var(--green);
+}
+
+.danger-button {
+  background: #fff0f0;
+  color: var(--red);
+}
+
+.full-button {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin: 14px 0 7px;
+}
+
+input, select, textarea {
+  width: 100%;
+  border: 1px solid #d5e2d9;
+  border-radius: 12px;
+  background: white;
+  padding: 13px;
+  color: var(--dark);
+  min-height: 46px;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+input[type="checkbox"] {
+  width: auto;
+  min-height: auto;
+}
+
+.result {
+  padding: 14px;
+  background: var(--light-green);
+  border-radius: 14px;
+  margin-top: 14px;
+  line-height: 1.8;
+}
+
+.muted {
+  color: #68796f;
+  font-size: 14px;
+}
+
+.badge {
+  display: inline-block;
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 13px;
+  background: var(--light-green);
+  color: var(--green);
+}
+
+.badge-danger {
+  background: #fff0f0;
+  color: var(--red);
+}
+
+.badge-warning {
+  background: #fff4df;
+  color: #9b650e;
+}
+
+.product-card {
+  border: 1px solid #e4ece6;
+  border-radius: 15px;
+  padding: 14px;
+  margin-top: 12px;
+  background: white;
+}
+
+.product-card h3 {
+  margin: 0 0 8px;
+}
+
+.bottom-nav {
+  position: fixed;
+  z-index: 100;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background: white;
+  border-top: 1px solid #e2ebe5;
+  display: flex;
+  justify-content: space-around;
+  padding: 9px 4px calc(9px + env(safe-area-inset-bottom));
+}
+
+.bottom-nav button {
+  background: transparent;
+  border: 0;
+  color: #64756a;
+  font-size: 12px;
+  padding: 5px 7px;
+  border-radius: 10px;
+}
+
+.bottom-nav button.active {
+  background: var(--light-green);
+  color: var(--green);
+  font-weight: bold;
+}
+
+.bottom-nav span {
+  display: block;
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.notice {
+  border-right: 4px solid var(--orange);
+  background: #fff7e9;
+  padding: 12px;
+  border-radius: 10px;
+  line-height: 1.8;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 25px 10px;
+  color: #68796f;
+}
+
+.hidden {
+  display: none !important;
+}
+
+body.large-text {
+  font-size: 20px;
+}
+
+body.large-text button,
+body.large-text input,
+body.large-text select,
+body.large-text textarea {
+  font-size: 19px;
+}
+
+@media (min-width: 600px) {
+  .stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .service-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+</style>
 </head>
+
 <body>
-  <header class="app-header">
-    <h1 class="brand">الثلاجة الذكية 🧊✨</h1>
-    <p class="welcome">أهلًا بك! خلّينا نحافظ على طعامك آمنًا ونقلل الهدر 💚</p>
-  </header>
-  <main class="container"> </main>
-  <section id="homePage" class="page active">
-  <h2 class="section-title">ملخص مخزونك 📊</h2>
+
+<header>
+  <div class="header-row">
+    <div>
+      <h1>الثلاجة الذكية 🧊✨</h1>
+      <p>طعام آمن، تنظيم أسهل، وهدر أقل 💚</p>
+    </div>
+    <button class="header-button"
+      type="button"
+      onclick="toggleLargeText()"
+      aria-label="تكبير الخط">🔎</button>
+  </div>
+</header>
+
+<main class="container">
+
+<section id="homePage" class="page active">
+  <div class="welcome">
+    <h2>أهلًا بك في الثلاجة الذكية 👋</h2>
+    <p>خلّينا ننظّم طعامك، نتابع تواريخ الصلاحية، ونتعرّف على طرق التخزين الآمن.</p>
+  </div>
 
   <div class="stats">
-    <div class="stat-card">
-      <span class="stat-icon">📦</span>
-      <strong class="stat-number" id="totalCount">0</strong>
-      <span class="stat-label">إجمالي المنتجات</span>
+    <div class="stat">
+      <strong id="totalCount">0</strong>
+      <span>إجمالي المنتجات</span>
     </div>
-
-    <div class="stat-card">
-      <span class="stat-icon">⏳</span>
-      <strong class="stat-number" id="soonCount">0</strong>
-      <span class="stat-label">قريبة الانتهاء</span>
+    <div class="stat">
+      <strong id="soonCount">0</strong>
+      <span>قريبة الانتهاء</span>
     </div>
-
-    <div class="stat-card">
-      <span class="stat-icon">⚠️</span>
-      <strong class="stat-number" id="expiredCount">0</strong>
-      <span class="stat-label">منتهية التاريخ</span>
+    <div class="stat">
+      <strong id="expiredCount">0</strong>
+      <span>منتهية الصلاحية</span>
     </div>
-
-    <div class="stat-card">
-      <span class="stat-icon">🔔</span>
-      <strong class="stat-number" id="alertCount">0</strong>
-      <span class="stat-label">التنبيهات</span>
+    <div class="stat">
+      <strong id="alertCount">0</strong>
+      <span>التنبيهات</span>
     </div>
   </div>
 
-  <h2 class="section-title">خدمات التطبيق</h2>
+  <h2>خدماتك الرئيسية</h2>
 
-  <div class="menu">
-    <button class="menu-button" onclick="openPage('inventoryPage')">
-      <span class="emoji">📦</span>
+  <div class="service-grid">
+    <button class="service-button" onclick="openPage('inventoryPage')">
+      <span class="service-icon">🧺</span>
       <strong>مخزوني</strong>
-      <small>إدارة المنتجات والصلاحية</small>
+      <small>إضافة المنتجات ومتابعتها</small>
     </button>
 
-    <button class="menu-button" onclick="openPage('analysisPage')">
-      <span class="emoji">🔍</span>
+    <button class="service-button" onclick="openPage('analysisPage')">
+      <span class="service-icon">🔍</span>
       <strong>تحليل الطعام</strong>
-      <small>معلومات الحفظ والسلامة</small>
+      <small>معلومات عن التخزين والسلامة</small>
     </button>
 
-    <button class="menu-button" onclick="openPage('barcodePage')">
-      <span class="emoji">📷</span>
+    <button class="service-button" onclick="openPage('barcodePage')">
+      <span class="service-icon">📷</span>
       <strong>مسح الباركود</strong>
-      <small>التعرف على المنتجات</small>
+      <small>قراءة بيانات المنتجات</small>
     </button>
 
-    <button class="menu-button" onclick="openPage('recipesPage')">
-      <span class="emoji">🍲</span>
+    <button class="service-button" onclick="openPage('recipesPage')">
+      <span class="service-icon">🍲</span>
       <strong>وصفاتي</strong>
-      <small>أفكار من مكونات مخزونك</small>
+      <small>أفكار للاستفادة من الطعام</small>
     </button>
 
-    <button class="menu-button" onclick="openPage('inspectorPage')">
-      <span class="emoji">🛡️</span>
+    <button class="service-button" onclick="openPage('inspectorPage')">
+      <span class="service-icon">🕵️</span>
       <strong>مفتش سلامة الغذاء</strong>
-      <small>اختبر معلوماتك</small>
+      <small>اختبري معلوماتك</small>
     </button>
 
-    <button class="menu-button" onclick="openPage('assistantPage')">
-      <span class="emoji">🤖</span>
-      <strong>المساعد الذكي</strong>
-      <small>مساعدة تجريبية</small>
+    <button class="service-button" onclick="openPage('assistantPage')">
+      <span class="service-icon">💬</span>
+      <strong>المساعد الغذائي</strong>
+      <small>اسألي عن سلامة الطعام</small>
     </button>
 
-    <button class="menu-button" onclick="openPage('notificationsPage')">
-      <span class="emoji">🔔</span>
+    <button class="service-button" onclick="openPage('notificationsPage')">
+      <span class="service-icon">🔔</span>
       <strong>التنبيهات</strong>
-      <small>متابعة مخزونك</small>
+      <small>راجعي المنتجات المهمة</small>
     </button>
 
-    <button class="menu-button" onclick="openPage('accountPage')">
-      <span class="emoji">👤</span>
-      <strong>حسابي</strong>
-      <small>الإعدادات والبيانات</small>
+    <button class="service-button" onclick="openPage('accountPage')">
+      <span class="service-icon">⚙️</span>
+      <strong>الإعدادات</strong>
+      <small>تخصيص تجربة الاستخدام</small>
     </button>
-  </div>
-
-  <div class="tip">
-    <strong>💡 نصيحة سلامة الغذاء</strong>
-    <p>افصلي اللحوم والدواجن النيئة عن الأطعمة الجاهزة للأكل، واحفظي كل نوع بطريقة مناسبة. تذكّري أن التاريخ وحده لا يضمن سلامة الطعام إذا أسيء تخزينه.</p>
   </div>
 </section>
 
 <section id="inventoryPage" class="page">
-  <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
-  <h2 class="section-title">📦 مخزوني</h2>
-  <div class="panel">
-    <h3>إدارة مخزونك 🧊</h3>
-    <p>اختاري الصفحة اللي تبين تدخلينها</p>
-    <button type="button" onclick="openInventoryPage('inventoryAddPage')"
-      style="width:100%;padding:18px;margin:8px 0;background:#167d58;color:white;border:0;border-radius:12px;font-size:16px;font-weight:bold;">
-      ➕ إضافة منتج جديد
+  <h2>🧺 مخزوني</h2>
+  <p>إدارة منتجاتك ومتابعة صلاحيتها بسهولة.</p>
+
+  <div class="service-grid">
+    <button class="service-button" onclick="openPage('inventoryAddPage')">
+      <span class="service-icon">➕</span>
+      <strong>إضافة منتج جديد</strong>
+      <small>سجّلي منتجًا في مخزونك</small>
     </button>
-    <button type="button" onclick="openInventoryPage('inventoryListPage')"
-      style="width:100%;padding:18px;margin:8px 0;background:#e8f5ee;color:#167d58;border:0;border-radius:12px;font-size:16px;font-weight:bold;">
-      📋 منتجاتي
+
+    <button class="service-button" onclick="openPage('inventoryListPage')">
+      <span class="service-icon">📦</span>
+      <strong>منتجاتي</strong>
+      <small>عرض المنتجات المحفوظة</small>
     </button>
   </div>
+
+  <button class="secondary-button full-button" onclick="openPage('homePage')">
+    العودة للرئيسية
+  </button>
 </section>
+
 <section id="inventoryAddPage" class="page">
-  <button class="back-button" onclick="openInventoryPage('inventoryPage')">← رجوع لمخزوني</button>
-  <h2 class="section-title">➕ إضافة منتج جديد</h2>
-  <div class="panel">
+  <h2>➕ إضافة منتج جديد</h2>
+
+  <div class="card">
     <form id="productForm">
-      <label for="productName">اسم المنتج *</label>
-      <input id="productName" type="text" required placeholder="مثال: حليب"
-        style="width:100%;padding:12px;margin:8px 0 14px;border:1px solid #ddd;border-radius:10px;">
-      <label for="productType">نوع الطعام</label>
-      <select id="productType"
-        style="width:100%;padding:12px;margin:8px 0 14px;border:1px solid #ddd;border-radius:10px;">
-        <option value="ألبان">ألبان</option>
-        <option value="لحوم ودواجن">لحوم ودواجن</option>
-        <option value="خضار وفواكه">خضار وفواكه</option>
-        <option value="حبوب ومعلبات">حبوب ومعلبات</option>
+      <label for="productName">اسم المنتج</label>
+      <input id="productName" required placeholder="مثال: الحليب">
+
+      <label for="productCategory">تصنيف المنتج</label>
+      <select id="productCategory" required>
+        <option value="ألبان">الألبان</option>
+        <option value="خضروات">الخضروات</option>
+        <option value="فواكه">الفواكه</option>
+        <option value="لحوم">اللحوم والدواجن</option>
+        <option value="أسماك">الأسماك</option>
+        <option value="معلبات">المعلبات</option>
+        <option value="أطعمة مطبوخة">الأطعمة المطبوخة</option>
         <option value="أخرى">أخرى</option>
       </select>
+
       <label for="productQuantity">الكمية</label>
-      <input id="productQuantity" type="number" min="0.01" step="any" value="1" required
-        style="width:100%;padding:12px;margin:8px 0 14px;border:1px solid #ddd;border-radius:10px;">
-      <label for="productLocation">مكان التخزين</label>
-      <select id="productLocation"
-        style="width:100%;padding:12px;margin:8px 0 14px;border:1px solid #ddd;border-radius:10px;">
+      <input id="productQuantity" placeholder="مثال: عبوة واحدة">
+
+      <label for="productExpiry">تاريخ انتهاء الصلاحية</label>
+      <input id="productExpiry" type="date" required>
+
+      <label for="productStorage">مكان التخزين</label>
+      <select id="productStorage">
         <option value="الثلاجة">الثلاجة</option>
         <option value="الفريزر">الفريزر</option>
-        <option value="الخزانة">الخزانة</option>
+        <option value="خزانة الطعام">خزانة الطعام</option>
       </select>
-      <label for="productExpiry">تاريخ انتهاء الصلاحية</label>
-      <input id="productExpiry" type="date"
-        style="width:100%;padding:12px;margin:8px 0 18px;border:1px solid #ddd;border-radius:10px;">
-      <button type="submit"
-        style="width:100%;padding:14px;background:#167d58;color:white;border:0;border-radius:12px;font-weight:bold;">
+
+      <label for="productNotes">ملاحظات (اختياري)</label>
+      <textarea id="productNotes" placeholder="مثال: فُتحت العبوة اليوم"></textarea>
+
+      <button type="submit" class="primary-button full-button">
         💾 حفظ المنتج
       </button>
     </form>
-    <p id="inventoryMessage" role="status"></p>
+
+    <div id="productFormMessage" class="result hidden"></div>
   </div>
+
+  <button class="secondary-button full-button" onclick="openPage('inventoryPage')">
+    رجوع للمخزون
+  </button>
 </section>
+
 <section id="inventoryListPage" class="page">
-  <button class="back-button" onclick="openInventoryPage('inventoryPage')">← رجوع لمخزوني</button>
-  <h2 class="section-title">📋 منتجاتي</h2>
-  <div class="panel">
-    <input id="inventorySearch" type="search"
-      placeholder="🔍 ابحثي عن منتج..."
-      aria-label="البحث في المنتجات"
-      style="width:100%;padding:12px;margin:8px 0 14px;border:1px solid #ddd;border-radius:10px;">
-    <div id="productList"></div>
+  <h2>📦 منتجاتي</h2>
+
+  <div class="card">
+    <label for="productSearch">ابحثي عن منتج</label>
+    <input id="productSearch" placeholder="اكتبي اسم المنتج...">
+
+    <div class="button-row">
+      <button class="secondary-button" onclick="renderProducts()">
+        تحديث القائمة
+      </button>
+      <button class="secondary-button" onclick="exportProducts()">
+        تصدير المخزون
+      </button>
+    </div>
   </div>
+
+  <div id="productsList"></div>
+
+  <button class="secondary-button full-button" onclick="openPage('inventoryPage')">
+    رجوع للمخزون
+  </button>
 </section>
 
 <section id="analysisPage" class="page">
-  <button class="back-button" onclick="openPage('homePage')">
-    ← الرئيسية
-  </button>
+  <h2>🔍 تحليل الطعام</h2>
+  <p>اختاري نوع الطعام للحصول على إرشادات عامة عن سلامته وتخزينه.</p>
 
-  <h2 class="section-title">🔍 تحليل الطعام</h2>
+  <div class="card">
+    <label for="analysisFood">نوع الطعام</label>
+    <input id="analysisFood" placeholder="مثال: الحليب أو الدجاج المطبوخ">
 
-  <div class="panel">
-    <h3>🍎 اسألي عن طعامك</h3>
-    <div style="margin:12px 0;padding:14px;background:#f0f8f3;border-radius:12px;">
-  <label for="foodImage" style="display:block;font-weight:bold;margin-bottom:10px;">
-    📸 اختاري صورة الطعام
-  </label>
+    <label for="analysisStorage">طريقة التخزين الحالية</label>
+    <select id="analysisStorage">
+      <option value="الثلاجة">في الثلاجة</option>
+      <option value="الفريزر">في الفريزر</option>
+      <option value="خارج الثلاجة">خارج الثلاجة</option>
+    </select>
 
-  <input
-    type="file"
-    id="foodImage"
-    accept="image/*"
-    style="display:block;width:100%;padding:10px;background:white;border-radius:10px;"
-  />
+    <label for="analysisState">حالة الطعام</label>
+    <select id="analysisState">
+      <option value="مغلق">العبوة مغلقة</option>
+      <option value="مفتوح">العبوة مفتوحة</option>
+      <option value="مطبوخ">طعام مطبوخ</option>
+    </select>
 
-  <img
-    id="foodImagePreview"
-    alt="معاينة صورة الطعام"
-    style="display:none;width:100%;max-height:260px;object-fit:contain;margin-top:12px;border-radius:12px;"
-  />
-</div>
-    <p>اكتبي سؤالك أو اضغطي على الميكروفون وتكلمي.</p>
-
-    <label for="foodQuestion">سؤالك عن الطعام</label>
-
-    <textarea id="foodQuestion"
-      placeholder="مثال: كيف أحفظ الحليب؟"
-      style="width:100%;min-height:100px;padding:14px;margin:10px 0;border:1px solid #ddd;border-radius:12px;font:inherit;">
-    </textarea>
-
-    <button type="button" id="voiceInputButton"
-      style="width:100%;padding:16px;margin:6px 0;background:#e8f5ee;color:#167d58;border:0;border-radius:12px;font-size:17px;font-weight:bold;">
-      🎙️ تحدثي الآن
+    <button class="primary-button full-button" onclick="analyzeFood()">
+      فحص إرشادات الطعام
     </button>
 
-    <button type="button" id="analyzeFoodButton"
-      style="width:100%;padding:16px;margin:6px 0;background:#167d58;color:white;border:0;border-radius:12px;font-size:17px;font-weight:bold;">
-      🔍 احصلي على الإجابة
+    <button class="secondary-button full-button" onclick="speakElement('analysisResult')">
+      🔊 قراءة النتيجة
     </button>
 
-    <div id="foodAnswer" aria-live="polite"
-      style="margin-top:16px;padding:15px;background:#f5f8f5;border-radius:12px;line-height:2;font-size:17px;">
-      ستظهر الإجابة هنا 💚
-    </div>
-
-    <button type="button" id="speakAnswerButton"
-      style="width:100%;padding:14px;margin-top:10px;background:#fff;color:#167d58;border:1px solid #167d58;border-radius:12px;font-size:17px;font-weight:bold;">
-      🔊 استمعي للإجابة
-    </button>
-
-    <button type="button" id="stopVoiceButton"
-      style="width:100%;padding:12px;margin-top:8px;background:#fff0ee;color:#b42318;border:0;border-radius:12px;font-size:16px;">
-      ⏹️ إيقاف الصوت
-    </button>
-
-    <p id="voiceStatus" role="status"
-      style="font-size:14px;color:#718078;line-height:1.8;">
-      يمكنك استخدام الكتابة أو الصوت.
-    </p>
+    <div id="analysisResult" class="result hidden" aria-live="polite"></div>
   </div>
 </section>
 
 <section id="barcodePage" class="page">
-  <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
-  <h2 class="section-title">📷 مسح الباركود</h2>
-  <div class="panel">سيُضاف هنا تشغيل الكاميرا والتعرف على المنتجات.</div>
+  <h2>📷 مسح الباركود</h2>
+  <p>يمكنك استخدام كاميرا الجهاز لمحاولة قراءة باركود المنتج.</p>
+
+  <div class="card">
+    <button class="primary-button full-button" onclick="startBarcodeScanner()">
+      تشغيل الكاميرا
+    </button>
+
+    <button class="secondary-button full-button" onclick="stopBarcodeScanner()">
+      إيقاف الكاميرا
+    </button>
+
+    <div id="barcodeReader" style="width:100%;margin-top:15px"></div>
+
+    <label for="barcodeInput">أو أدخلي رقم الباركود</label>
+    <input id="barcodeInput" inputmode="numeric" placeholder="رقم الباركود">
+
+    <button class="secondary-button full-button" onclick="lookupBarcode()">
+      البحث عن المنتج
+    </button>
+
+    <div id="barcodeResult" class="result hidden" aria-live="polite"></div>
+  </div>
 </section>
 
 <section id="recipesPage" class="page">
-  <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
-  <h2 class="section-title">🍲 وصفاتي</h2>
-  <div class="panel">سيُضاف هنا اقتراح الوصفات بحسب المخزون.</div>
+  <h2>🍲 وصفاتي</h2>
+  <p>أفكار بسيطة للاستفادة من المكونات الموجودة عندك.</p>
+
+  <div class="card">
+    <label for="recipeIngredients">المكونات المتوفرة</label>
+    <textarea id="recipeIngredients" placeholder="مثال: بيض، جبن، طماطم، خبز"></textarea>
+
+    <button class="primary-button full-button" onclick="suggestRecipes()">
+      اقترحي لي وصفات
+    </button>
+
+    <button class="secondary-button full-button" onclick="speakElement('recipeResult')">
+      🔊 قراءة الوصفات
+    </button>
+
+    <div id="recipeResult" class="result hidden" aria-live="polite"></div>
+  </div>
 </section>
 
 <section id="inspectorPage" class="page">
-  <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
-  <h2 class="section-title">🛡️ مفتش سلامة الغذاء</h2>
-  <div class="panel">سيُضاف هنا الاختبار التفاعلي والأسئلة.</div>
+  <h2>🕵️ مفتش سلامة الغذاء</h2>
+  <p>اختبري معلوماتك في سلامة الغذاء.</p>
+
+  <div class="card">
+    <div id="quizQuestion" class="result">
+      هل يجوز ترك الطعام المطبوخ خارج الثلاجة لساعات طويلة؟
+    </div>
+
+    <div class="button-row" style="margin-top:14px">
+      <button class="primary-button" onclick="answerQuiz(false)">
+        نعم، يجوز
+      </button>
+      <button class="secondary-button" onclick="answerQuiz(true)">
+        لا، لا يجوز
+      </button>
+    </div>
+
+    <p id="quizFeedback" aria-live="polite"></p>
+
+    <button class="secondary-button full-button" onclick="nextQuizQuestion()">
+      السؤال التالي
+    </button>
+
+    <p>النتيجة: <strong id="quizScore">0</strong></p>
+  </div>
 </section>
 
 <section id="assistantPage" class="page">
-  <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
-  <h2 class="section-title">🤖 المساعد الذكي</h2>
-  <div class="panel">هذه واجهة تجريبية، ولم يتم ربطها حتى الآن بنموذج ذكاء اصطناعي.</div>
+  <h2>💬 المساعد الغذائي</h2>
+  <p>اكتبي سؤالًا عن حفظ الطعام أو سلامته.</p>
+
+  <div class="card">
+    <label for="assistantQuestion">سؤالك</label>
+    <textarea id="assistantQuestion" placeholder="مثال: كيف أحفظ الحليب بعد فتحه؟"></textarea>
+
+    <button class="primary-button full-button" onclick="askAssistant()">
+      الحصول على إجابة
+    </button>
+
+    <button class="secondary-button full-button" onclick="speakElement('assistantResult')">
+      🔊 قراءة الإجابة
+    </button>
+
+    <div id="assistantResult" class="result hidden" aria-live="polite"></div>
+
+    <p class="muted">
+      الإجابات إرشادات عامة، ولا تغني عن تعليمات العبوة أو الجهات المختصة.
+    </p>
+  </div>
 </section>
 
 <section id="notificationsPage" class="page">
-  <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
-  <h2 class="section-title">🔔 التنبيهات</h2>
-  <div class="panel">ستظهر هنا تنبيهات المخزون بعد تفعيل إدارة المنتجات.</div>
+  <h2>🔔 التنبيهات</h2>
+  <p>راجعي المنتجات التي اقترب تاريخ صلاحيتها أو انتهى.</p>
+
+  <div id="notificationsList"></div>
+
+  <button class="primary-button full-button" onclick="refreshDashboard()">
+    تحديث التنبيهات
+  </button>
 </section>
 
 <section id="accountPage" class="page">
-  <button class="back-button" onclick="openPage('homePage')">← الرئيسية</button>
-  <h2 class="section-title">👤 حسابي</h2>
-  <div class="panel">ستُضاف هنا إعدادات التطبيق والنسخ الاحتياطي.</div>
-</section>
-</main>
-<nav class="bottom-nav" aria-label="التنقل الرئيسي">
-    <button class="nav-button active" onclick="openPage('homePage', this)">
-      <span>🏠</span>الرئيسية
-    </button>
-    <button class="nav-button" onclick="openPage('inventoryPage', this)">
-      <span>📦</span>مخزوني
-    </button>
-    <button class="nav-button" onclick="openPage('analysisPage', this)">
-      <span>🔍</span>التحليل
-    </button>
-    <button class="nav-button" onclick="openPage('recipesPage', this)">
-      <span>🍲</span>وصفاتي
-    </button>
-    <button class="nav-button" onclick="openPage('accountPage', this)">
-      <span>👤</span>حسابي
-    </button>
-  </nav>
-  <script>
-    "use strict";
-function openInventoryPage(pageId) {
-  const target = document.getElementById(pageId);
-  if (!target) {
-    alert("الصفحة غير موجودة: " + pageId);
-    return;
-  }
-  document.querySelectorAll(".page").forEach(function(page) {
-    page.classList.remove("active");
-  });
-  target.classList.add("active");
-  document.querySelectorAll(".nav-button").forEach(function(button) {
-    button.classList.remove("active");
-  });
-  window.scrollTo(0, 0);
-}
-    
-    
-const STORAGE_KEY = "smartFridgeProducts";
+  <h2>⚙️ الإعدادات</h2>
 
-let products = [];
+  <div class="card">
+    <h3>سهولة الاستخدام</h3>
+
+    <button class="secondary-button full-button" onclick="toggleLargeText()">
+      🔎 تكبير أو تصغير الخط
+    </button>
+
+    <button class="secondary-button full-button" onclick="speakText('أهلًا بك في الثلاجة الذكية. نتمنى لك تجربة سهلة ومفيدة.')">
+      🔊 تجربة القراءة الصوتية
+    </button>
+
+    <button class="secondary-button full-button" onclick="stopSpeaking()">
+      إيقاف الصوت
+    </button>
+  </div>
+
+  <div class="card">
+    <h3>إدارة البيانات</h3>
+    <p>يمكنك حفظ نسخة من قائمة المنتجات للاحتفاظ بها.</p>
+
+    <button class="secondary-button full-button" onclick="exportProducts()">
+      تصدير المنتجات
+    </button>
+
+    <label for="importFile">استعادة نسخة محفوظة</label>
+    <input id="importFile" type="file" accept=".json,application/json">
+
+    <button class="secondary-button full-button" onclick="importProducts()">
+      استعادة المنتجات
+    </button>
+
+    <button class="danger-button full-button" onclick="clearProducts()">
+      حذف جميع المنتجات
+    </button>
+  </div>
+</section>
+
+</main>
+
+<nav class="bottom-nav" aria-label="التنقل الرئيسي">
+  <button class="active" data-page="homePage" onclick="openPage('homePage')">
+    <span>🏠</span>الرئيسية
+  </button>
+
+  <button data-page="inventoryPage" onclick="openPage('inventoryPage')">
+    <span>🧺</span>مخزوني
+  </button>
+
+  <button data-page="analysisPage" onclick="openPage('analysisPage')">
+    <span>🔍</span>التحليل
+  </button>
+
+  <button data-page="recipesPage" onclick="openPage('recipesPage')">
+    <span>🍲</span>الوصفات
+  </button>
+
+  <button data-page="accountPage" onclick="openPage('accountPage')">
+    <span>⚙️</span>الإعدادات
+  </button>
+</nav>
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+const STORAGE_KEY = "smartFridgeProducts";
+let products = loadProducts();
+let scanner = null;
+let quizIndex = 0;
+let quizScore = 0;
+
+const quizQuestions = [
+  {
+    question: "هل يجوز ترك الطعام المطبوخ خارج الثلاجة لساعات طويلة؟",
+    answer: false,
+    explanation: "الصحيح: لا. يُبرّد الطعام سريعًا، ولا يُترك في حرارة الغرفة أكثر من ساعتين، أو ساعة في الجو الذي تتجاوز حرارته 32 درجة مئوية."
+  },
+  {
+    question: "هل يجب فصل اللحوم النيئة عن الطعام الجاهز للأكل؟",
+    answer: true,
+    explanation: "الصحيح: نعم، لتقليل انتقال الميكروبات إلى الطعام الجاهز."
+  },
+  {
+    question: "هل الرائحة الطبيعية تضمن أن الطعام آمن؟",
+    answer: false,
+    explanation: "الصحيح: لا. قد توجد ميكروبات ضارة دون تغيير واضح في الرائحة."
+  },
+  {
+    question: "هل يُفضّل غسل اليدين قبل إعداد الطعام؟",
+    answer: true,
+    explanation: "الصحيح: نعم، بالماء والصابون."
+  }
+];
 
 function loadProducts() {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    const parsed = saved ? JSON.parse(saved) : [];
-
-    products = Array.isArray(parsed)
-      ? parsed.filter(p =>
-          p &&
-          typeof p.id === "string" &&
-          typeof p.name === "string"
-        )
-      : [];
-  } catch (error) {
-    products = [];
-    console.error("تعذر قراءة المخزون:", error);
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    return Array.isArray(saved) ? saved : [];
+  } catch {
+    return [];
   }
-
-  renderProducts();
 }
 
 function saveProducts() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-    updateInventoryStats();
+    refreshDashboard();
     return true;
-  } catch (error) {
-    showInventoryMessage(
-      "تعذر الحفظ. قد تكون مساحة التخزين ممتلئة.",
-      true
-    );
-    console.error("تعذر حفظ المخزون:", error);
+  } catch {
+    alert("تعذّر حفظ البيانات. تحققي من مساحة التخزين في المتصفح.");
     return false;
   }
 }
 
-function showInventoryMessage(message, isError = false) {
-  const box = document.getElementById("inventoryMessage");
-  if (!box) return;
+function openPage(pageId) {
+  const target = document.getElementById(pageId);
+  if (!target) return;
 
-  box.textContent = message;
-  box.style.color = isError ? "#b42318" : "#167d58";
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.remove("active");
+  });
+
+  target.classList.add("active");
+
+  document.querySelectorAll(".bottom-nav button").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === pageId);
+  });
+
+  if (pageId === "inventoryListPage") renderProducts();
+  if (pageId === "notificationsPage") renderNotifications();
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-function getToday() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
+function toggleLargeText() {
+  document.body.classList.toggle("large-text");
 }
 
-function getExpiryInfo(expiry) {
-  if (!expiry) {
-    return {
-      label: "لم يُسجّل تاريخ الصلاحية",
-      type: "unknown"
-    };
-  }
-
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(expiry)) {
-    return {
-      label: "تاريخ غير صالح",
-      type: "unknown"
-    };
-  }
-
-  const parsed = new Date(expiry + "T00:00:00");
-
-  if (
-    Number.isNaN(parsed.getTime()) ||
-    parsed.toISOString().slice(0, 10) !== expiry
-  ) {
-    return {
-      label: "تاريخ غير صالح",
-      type: "unknown"
-    };
-  }
-
-  const today = getToday();
-
-  if (expiry < today) {
-    return {
-      label: "انتهى التاريخ — راجعي المنتج",
-      type: "expired"
-    };
-  }
-
-  const difference =
-    (parsed.getTime() -
-      new Date(today + "T00:00:00").getTime()) /
-    86400000;
-
-  if (difference <= 3) {
-    return {
-      label: difference === 0
-        ? "تاريخ الانتهاء اليوم"
-        : `ينتهي خلال ${Math.ceil(difference)} يوم`,
-      type: "soon"
-    };
-  }
-
-  return {
-    label: "لم يحن تاريخ الانتهاء",
-    type: "valid"
-  };
+function daysUntil(dateString) {
+  if (!dateString) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const expiry = new Date(dateString + "T00:00:00");
+  if (Number.isNaN(expiry.getTime())) return null;
+  return Math.round((expiry - today) / 86400000);
 }
+
+function productStatus(product) {
+  const days = daysUntil(product.expiry);
+  if (days === null) return "لم يُحدد التاريخ";
+  if (days < 0) return "منتهي الصلاحية";
+  if (days === 0) return "تنتهي صلاحيته اليوم";
+  if (days <= 3) return "قريب الانتهاء";
+  return "صالح حسب التاريخ المسجل";
+}
+
+function refreshDashboard() {
+  const soon = products.filter(p => {
+    const d = daysUntil(p.expiry);
+    return d !== null && d >= 0 && d <= 3;
+  });
+
+  const expired = products.filter(p => daysUntil(p.expiry) < 0);
+
+  document.getElementById("totalCount").textContent = products.length;
+  document.getElementById("soonCount").textContent = soon.length;
+  document.getElementById("expiredCount").textContent = expired.length;
+  document.getElementById("alertCount").textContent = soon.length + expired.length;
+
+  renderNotifications();
+}
+
+document.getElementById("productForm").addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  const name = document.getElementById("productName").value.trim();
+  const expiry = document.getElementById("productExpiry").value;
+  const message = document.getElementById("productFormMessage");
+
+  if (!name || !expiry) {
+    message.textContent = "أكملي اسم المنتج وتاريخ الصلاحية.";
+    message.classList.remove("hidden");
+    return;
+  }
+
+  if (daysUntil(expiry) === null) {
+    message.textContent = "تحققي من تاريخ الصلاحية.";
+    message.classList.remove("hidden");
+    return;
+  }
+
+  products.push({
+    id: Date.now().toString() + Math.random().toString(16).slice(2),
+    name,
+    category: document.getElementById("productCategory").value,
+    quantity: document.getElementById("productQuantity").value.trim(),
+    expiry,
+    storage: document.getElementById("productStorage").value,
+    notes: document.getElementById("productNotes").value.trim()
+  });
+
+  if (saveProducts()) {
+    this.reset();
+    message.textContent = "تم حفظ المنتج بنجاح 💚";
+    message.classList.remove("hidden");
+  }
+});
 
 function renderProducts() {
-  const list = document.getElementById("productList");
+  const list = document.getElementById("productsList");
+  const search = document.getElementById("productSearch").value.trim().toLowerCase();
+
+  const filtered = products.filter(p =>
+    (p.name || "").toLowerCase().includes(search)
+  );
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="card empty-state">لا توجد منتجات مطابقة. أضيفي منتجًا جديدًا من صفحة مخزوني.</div>';
+    return;
+  }
+
+  list.replaceChildren();
+
+  filtered.forEach(product => {
+    const card = document.createElement("div");
+    card.className = "product-card";
+
+    const title = document.createElement("h3");
+    title.textContent = "🧺 " + product.name;
+
+    const details = document.createElement("p");
+    details.textContent =
+      "التصنيف: " + (product.category || "غير محدد") +
+      "\nالكمية: " + (product.quantity || "غير محددة") +
+      "\nالصلاحية: " + (product.expiry || "غير محددة") +
+      "\nالتخزين: " + (product.storage || "غير محدد") +
+      "\nالحالة: " + productStatus(product);
+
+    details.style.whiteSpace = "pre-line";
+
+    const notes = document.createElement("p");
+    notes.textContent = product.notes ? "ملاحظات: " + product.notes : "";
+
+    const remove = document.createElement("button");
+    remove.className = "danger-button";
+    remove.textContent = "حذف المنتج";
+    remove.onclick = () => deleteProduct(product.id);
+
+    card.append(title, details, notes, remove);
+    list.appendChild(card);
+  });
+}
+
+document.getElementById("productSearch").addEventListener("input", renderProducts);
+
+function deleteProduct(id) {
+  if (!confirm("هل تريدين حذف هذا المنتج؟")) return;
+  products = products.filter(p => p.id !== id);
+  if (saveProducts()) renderProducts();
+}
+
+function renderNotifications() {
+  const list = document.getElementById("notificationsList");
   if (!list) return;
 
   list.replaceChildren();
 
-  const searchInput = document.getElementById("inventorySearch");
-  const query = searchInput
-    ? searchInput.value.trim().toLowerCase()
-    : "";
+  const important = products.filter(p => {
+    const d = daysUntil(p.expiry);
+    return d !== null && d <= 3;
+  });
 
-  const filtered = products
-    .filter(product =>
-      product.name.toLowerCase().includes(query)
-    )
-    .sort((a, b) => {
-      if (!a.expiry) return 1;
-      if (!b.expiry) return -1;
-      return a.expiry.localeCompare(b.expiry);
-    });
-
-  if (filtered.length === 0) {
-    const empty = document.createElement("p");
-    empty.textContent = products.length
-      ? "ما لقينا منتجًا بهذا الاسم."
-      : "مخزونك فارغ حاليًا. أضيفي أول منتج 🌱";
-    list.appendChild(empty);
-    updateInventoryStats();
+  if (!important.length) {
+    list.innerHTML = '<div class="card empty-state">لا توجد منتجات مسجلة منتهية أو قريبة الانتهاء حاليًا.</div>';
     return;
   }
 
-  filtered.forEach(product => {
-    const card = document.createElement("div");
-    card.style.cssText =
-      "border:1px solid #e4ece6;border-radius:12px;" +
-      "padding:14px;margin:12px 0;";
-
-    const title = document.createElement("h4");
-    title.textContent = product.name;
-    title.style.margin = "0 0 8px";
-
-    const details = document.createElement("p");
-    details.textContent =
-      `النوع: ${product.type} | الكمية: ${product.quantity}` +
-      ` | المكان: ${product.location}`;
-    details.style.lineHeight = "1.8";
-
-    const expiry = document.createElement("p");
-    const info = getExpiryInfo(product.expiry);
-    expiry.textContent = product.expiry
-      ? `${info.label} (${product.expiry})`
-      : info.label;
-    expiry.style.color =
-      info.type === "expired" ? "#b42318" :
-      info.type === "soon" ? "#a15c00" : "#167d58";
-
-    const deleteButton = document.createElement("button");
-    deleteButton.type = "button";
-    deleteButton.textContent = "🗑️ حذف المنتج";
-    deleteButton.style.cssText =
-      "padding:10px 14px;border:0;border-radius:9px;" +
-      "background:#fff0ee;color:#b42318;";
-
-    deleteButton.addEventListener("click", () => {
-      if (!confirm(`هل تريدين حذف "${product.name}"؟`)) {
-        return;
-      }
-
-      const oldProducts = products;
-      products = products.filter(p => p.id !== product.id);
-
-      if (!saveProducts()) {
-        products = oldProducts;
-        return;
-      }
-
-      renderProducts();
-      showInventoryMessage("تم حذف المنتج بنجاح.");
-    });
-
-    card.append(title, details, expiry, deleteButton);
-    list.appendChild(card);
-  });
-
-  updateInventoryStats();
-}
-
-function updateInventoryStats() {
-  const today = getToday();
-
-  const expired = products.filter(p =>
-    p.expiry && p.expiry < today
-  ).length;
-
-  const soon = products.filter(p => {
-    if (!p.expiry || p.expiry < today) return false;
-
-    const days =
-      (new Date(p.expiry + "T00:00:00").getTime() -
-        new Date(today + "T00:00:00").getTime()) /
-      86400000;
-
-    return days <= 3;
-  }).length;
-
-  const totalElement = document.getElementById("totalCount");
-  const soonElement = document.getElementById("soonCount");
-  const expiredElement = document.getElementById("expiredCount");
-  const alertElement = document.getElementById("alertCount");
-
-  if (totalElement) totalElement.textContent = products.length;
-  if (soonElement) soonElement.textContent = soon;
-  if (expiredElement) expiredElement.textContent = expired;
-  if (alertElement) alertElement.textContent = expired + soon;
-}
-
-const productForm = document.getElementById("productForm");
-
-if (productForm) {
-  productForm.addEventListener("submit", function(event) {
-    event.preventDefault();
-
-    const name = document.getElementById("productName")
-      .value.trim();
-
-    const type = document.getElementById("productType").value;
-    const quantity = Number(
-      document.getElementById("productQuantity").value
-    );
-    const location = document.getElementById("productLocation").value;
-    const expiry = document.getElementById("productExpiry").value;
-
-    if (!name) {
-      showInventoryMessage("اكتبي اسم المنتج أولًا.", true);
-      return;
-    }
-
-    if (!Number.isFinite(quantity) || quantity <= 0) {
-      showInventoryMessage("أدخلي كمية أكبر من صفر.", true);
-      return;
-    }
-
-    if (expiry && isNaN(Date.parse(expiry))) {
-  showInventoryMessage("أدخلي تاريخ صلاحية صحيح.", true);
-  return;
-}
-
-    const product = {
-      id: (crypto.randomUUID
-        ? crypto.randomUUID()
-        : String(Date.now()) + Math.random().toString(16).slice(2)),
-      name,
-      type,
-      quantity,
-      location,
-      expiry
-    };
-
-    products.push(product);
-
-    if (!saveProducts()) {
-      products.pop();
-      return;
-    }
-
-    productForm.reset();
-    renderProducts();
-    showInventoryMessage("تمت إضافة المنتج وحفظه بنجاح ✅");
+  important.forEach(product => {
+    const item = document.createElement("div");
+    item.className = "card";
+    const heading = document.createElement("h3");
+    heading.textContent = "🔔 " + product.name;
+    const detail = document.createElement("p");
+    detail.textContent = productStatus(product) + " — " + product.expiry;
+    item.append(heading, detail);
+    list.appendChild(item);
   });
 }
 
-const searchBox = document.getElementById("inventorySearch");
+function analyzeFood() {
+  const food = document.getElementById("analysisFood").value.trim();
+  const storage = document.getElementById("analysisStorage").value;
+  const state = document.getElementById("analysisState").value;
+  const result = document.getElementById("analysisResult");
 
-if (searchBox) {
-  searchBox.addEventListener("input", renderProducts);
-}
-
-/* تحميل المخزون المحفوظ عند فتح التطبيق */
-loadProducts();
-function openInventoryPage(pageId) {
-  const target = document.getElementById(pageId);
-  if (!target) {
-    alert("الصفحة غير موجودة: " + pageId);
-    return;
-  }
-  document.querySelectorAll(".page").forEach(function(page) {
-    page.classList.remove("active");
-  });
-  target.classList.add("active");
-  document.querySelectorAll(".nav-button").forEach(function(button) {
-    button.classList.remove("active");
-  });
-  window.scrollTo(0, 0);
-}
-window.onerror = function(message) {
-  alert("خطأ في التطبيق: " + message);
-};
-window.openPage = function(pageId, clickedButton) {
-  const target = document.getElementById(pageId);
-
-  if (!target) {
-    alert("الصفحة غير موجودة: " + pageId);
+  if (!food) {
+    result.textContent = "اكتبي اسم الطعام أولًا.";
+    result.classList.remove("hidden");
     return;
   }
 
-  document.querySelectorAll(".page").forEach(function(page) {
-    page.classList.remove("active");
-  });
+  let advice = "اتبعي تعليمات العبوة، واحفظي الطعام بدرجة الحرارة المناسبة لنوعه.";
 
-  target.classList.add("active");
-
-  document.querySelectorAll(".nav-button").forEach(function(button) {
-    button.classList.remove("active");
-    if (button === clickedButton) {
-      button.classList.add("active");
-    }
-  });
-
-  window.scrollTo(0, 0);
-};
-/* تفعيل الصوت وتحليل الطعام في الثلاجة الذكية */
-(function () {
-  if (window.smartFridgeVoiceReady) return;
-  window.smartFridgeVoiceReady = true;
-
-  const question = document.getElementById("foodQuestion");
-  const answer = document.getElementById("foodAnswer");
-  const voiceButton = document.getElementById("voiceInputButton");
-  const analyzeButton = document.getElementById("analyzeFoodButton");
-  const speakButton = document.getElementById("speakAnswerButton");
-  const stopButton = document.getElementById("stopVoiceButton");
-  const status = document.getElementById("voiceStatus");
-
-  if (!question || !answer || !voiceButton ||
-      !analyzeButton || !speakButton || !stopButton || !status) {
-    window.smartFridgeVoiceReady = false;
-    return;
-  }
-
-  let recognition = null;
-  let lastAnswer = "";
-
-  function setStatus(message) {
-    status.textContent = message;
-  }
-
-  function getFoodAnswer(text) {
-    const q = text.toLowerCase().replace(/[أإآ]/g, "ا");
-
-    if (/حليب|لبن|زبادي|ألبان/.test(q)) {
-      return "احفظي الحليب ومنتجات الألبان في الثلاجة عند 4 درجات مئوية أو أقل، وأعيديها للثلاجة مباشرة بعد الاستخدام. إذا بقيت خارج التبريد أكثر من ساعتين، فالأكثر أمانًا التخلص منها.";
-    }
-
-    if (/دجاج|لحوم|لحم ني|لحم خام|سمك|نيء|نيئ/.test(q)) {
-      return "احفظي اللحوم النيئة في وعاء محكم أسفل الثلاجة حتى لا تتسرب سوائلها إلى الأطعمة الأخرى. افصليها عن الطعام الجاهز للأكل، واطهي الدجاج جيدًا حتى تصل حرارته الداخلية إلى 74 درجة مئوية.";
-    }
-
-    if (/بقايا|رز|ارز|طبخ|مطبوخ|وجبة|اكل مطبوخ|طعام مطبوخ/.test(q)) {
-      return "ضعي بقايا الطعام في الثلاجة خلال ساعتين من الطبخ، في أوعية نظيفة ومغطاة. قسّمي الكميات الكبيرة إلى أوعية صغيرة لتبرد بسرعة، واستخدميها عادة خلال 3 إلى 4 أيام.";
-    }
-
-    if (/انتهاء|منتهي|الصلاحيه|صلاحية|تاريخ الصلاحية|منتهية/.test(q)) {
-      return "تحققي من تاريخ الصلاحية وتعليمات التخزين على العبوة. إذا انتهت الصلاحية، فلا تتناولي المنتج إذا كان ملصقه يمنع ذلك. الرائحة والشكل وحدهما لا يكفيان للحكم على سلامة الطعام.";
-    }
-
-    if (/تجميد|فريزر|مجمد|تجميد الطعام/.test(q)) {
-      return "احفظي الفريزر عند 18 درجة مئوية تحت الصفر أو أقل. غلّفي الطعام جيدًا واكتبي تاريخ التجميد عليه. أذيبي الطعام داخل الثلاجة أو باستخدام طريقة آمنة، وليس على سطح المطبخ.";
-    }
-
-    if (/ثلاجه|حرارة الثلاجة|درجه حراره|درجة حرارة/.test(q)) {
-      return "اضبطي الثلاجة على 4 درجات مئوية أو أقل، والفريزر على 18 درجة مئوية تحت الصفر أو أقل. استخدمي مقياس حرارة للتأكد من أن درجة الحرارة مناسبة.";
-    }
-
-    if (/علبة|معلبات|معلب|انتفاخ|انتفخت/.test(q)) {
-      return "لا تستخدمي علبة معلبات منتفخة أو متسربة أو متضررة بشدة أو ذات رائحة غير طبيعية. لا تتذوقي الطعام للتأكد من سلامته، وتخلّصي من العبوة المشكوك فيها بطريقة آمنة.";
-    }
-
-    if (/تلوث|تلوث متبادل|اغسل|غسل اليد|نظافه|نظافة/.test(q)) {
-      return "اغسلي يديك بالماء والصابون قبل تحضير الطعام وبعد التعامل مع اللحوم النيئة. استخدمي ألواح تقطيع وأدوات منفصلة للأطعمة النيئة والجاهزة للأكل، ونظفي الأسطح جيدًا.";
-    }
-
-    if (/بيض/.test(q)) {
-      return "احفظي البيض في الثلاجة، وتجنبي استخدام البيض المتشقق أو المتسخ بشدة. اطهي البيض جيدًا، واغسلي يديك والأدوات بعد التعامل معه.";
-    }
-
-    if (/فواكه|خضار|خضروات/.test(q)) {
-      return "اغسلي الفواكه والخضروات تحت ماء جارٍ نظيف قبل تناولها أو تقطيعها. افصليها عن اللحوم النيئة، واحفظي المنتجات المقطعة في الثلاجة داخل أوعية نظيفة.";
-    }
-
-    if (/خارج الثلاجه|برا الثلاجه|درجة الغرفة|حرارة الغرفة/.test(q)) {
-      return "الأطعمة القابلة للتلف لا ينبغي أن تبقى في درجة حرارة الغرفة أكثر من ساعتين، أو ساعة واحدة إذا تجاوزت الحرارة 32 درجة مئوية. إذا تجاوزت المدة، فالأكثر أمانًا التخلص منها.";
-    }
-
-    return "أقدر أساعدك بإرشادات عامة عن سلامة الغذاء، لكن لم أجد إجابة محددة لهذا السؤال. اكتبي اسم الطعام وطريقة حفظه أو سؤالك بشكل أوضح. وإذا كان الطعام مشكوكًا في سلامته، فلا تتذوقيه للتأكد.";
-  }
-
-  analyzeButton.addEventListener("click", async function () {
-  const text = question.value.trim();
-  const imageFile = foodImageInput?.files?.[0];
-
-  if (!text && !imageFile) {
-    answer.textContent = "اكتبي سؤالك أو اختاري صورة للطعام أولًا.";
-    setStatus("بانتظار سؤالك أو صورتك.");
-    return;
-  }
-
-  analyzeButton.disabled = true;
-  analyzeButton.textContent = "⏳ جاري التحليل...";
-  answer.textContent = "لحظة، أرسل سؤالك إلى الذكاء الاصطناعي... 🤖";
-  setStatus("جارٍ الاتصال بالمساعد الذكي.");
-
-  try {
-    const body = { question: text };
-
-    if (imageFile) {
-      const imageData = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(new Error("تعذرت قراءة الصورة."));
-        reader.readAsDataURL(imageFile);
-      });
-
-      body.image = imageData;
-      body.mimeType = imageFile.type;
-    }
-
-    const response = await fetch(
-      "https://smart-fridge-ai.hrp4cwzhp7.workers.dev/",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.error || "تعذر الحصول على الإجابة.");
-    }
-
-    lastAnswer = result.answer;
-    answer.textContent = lastAnswer;
-    setStatus("وصلت الإجابة من الذكاء الاصطناعي. اضغطي على زر الاستماع لسماعها.");
-  } catch (error) {
-    answer.textContent = "ما قدرنا نتصل بالذكاء الاصطناعي. " + error.message;
-    setStatus("تحققي من الاتصال وحاولي مرة أخرى.");
-  } finally {
-    analyzeButton.disabled = false;
-    analyzeButton.textContent = "🔍 احصلي على الإجابة";
-  }
-});
-  const SpeechRecognition =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
-
-  if (SpeechRecognition) {
-    recognition = new SpeechRecognition();
-    recognition.lang = "ar-SA";
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = function () {
-      setStatus("أستمع إليك الآن... تفضلي بالكلام 🎙️");
-      voiceButton.disabled = true;
-      voiceButton.textContent = "🎙️ جاري الاستماع...";
-    };
-
-    recognition.onresult = function (event) {
-      const spokenText = event.results[0][0].transcript;
-      question.value = spokenText;
-      setStatus("وصلني سؤالك. اضغطي «احصلي على الإجابة».");
-    };
-
-    recognition.onerror = function (event) {
-      if (event.error === "not-allowed") {
-        setStatus("يرجى السماح للمتصفح باستخدام الميكروفون من إعدادات الموقع.");
-      } else {
-        setStatus("لم أتمكن من التقاط الصوت. حاولي مرة أخرى أو اكتبي سؤالك.");
-      }
-    };
-
-    recognition.onend = function () {
-      voiceButton.disabled = false;
-      voiceButton.textContent = "🎙️ تحدثي الآن";
-    };
-
-    voiceButton.addEventListener("click", function () {
-      try {
-        recognition.start();
-      } catch (error) {
-        setStatus("انتظري لحظة ثم حاولي تشغيل الميكروفون مرة أخرى.");
-      }
-    });
+  if (storage === "الثلاجة") {
+    advice = "تأكدي أن درجة حرارة الثلاجة 4 درجات مئوية أو أقل، واحفظي الطعام مغطى وبعيدًا عن اللحوم النيئة.";
+  } else if (storage === "الفريزر") {
+    advice = "يُفضّل أن تكون حرارة الفريزر -18 درجة مئوية أو أقل. أذيبي الطعام في الثلاجة أو بطريقة آمنة.";
   } else {
-    voiceButton.addEventListener("click", function () {
-      setStatus("التعرف على الصوت غير مدعوم في هذا المتصفح. جربي فتح التطبيق في متصفح يدعم هذه الميزة، أو اكتبي سؤالك.");
-    });
+    advice = "الأطعمة القابلة للتلف لا تُترك خارج التبريد أكثر من ساعتين، أو ساعة إذا تجاوزت الحرارة 32 درجة مئوية.";
   }
 
-  speakButton.addEventListener("click", function () {
-  if (!lastAnswer) {
-    setStatus("اكتبي سؤالك واضغطي «احصلي على الإجابة» أولًا.");
+  if (state === "مطبوخ") {
+    advice += " ضعي الطعام المطبوخ في أوعية صغيرة وضحلة وبرّديه سريعًا.";
+  } else if (state === "مفتوح") {
+    advice += " بعد فتح العبوة، اتبعي تعليمات الحفظ ومدة الاستهلاك المكتوبة عليها.";
+  }
+
+  result.textContent =
+    "الطعام: " + food + "\n" +
+    "التخزين: " + storage + "\n" +
+    "إرشادات السلامة: " + advice +
+    "\nمهم: هذه إرشادات عامة وليست حكمًا قاطعًا على صلاحية الطعام. إذا شككتِ في سلامته فتخلّصي منه.";
+  result.style.whiteSpace = "pre-line";
+  result.classList.remove("hidden");
+}
+
+function suggestRecipes() {
+  const input = document.getElementById("recipeIngredients").value.trim();
+  const result = document.getElementById("recipeResult");
+
+  if (!input) {
+    result.textContent = "اكتبي المكونات الموجودة عندك أولًا.";
+    result.classList.remove("hidden");
     return;
   }
 
+  const ingredients = input.split(/[،,]/).map(x => x.trim()).filter(Boolean);
+  const ideas = [];
+
+  if (ingredients.some(x => /بيض/.test(x))) ideas.push("بيض بالخضروات: اطهي البيض جيدًا وأضيفي الخضروات المتوفرة.");
+  if (ingredients.some(x => /جبن/.test(x))) ideas.push("ساندويتش الجبن: استخدمي خبزًا مناسبًا وأضيفي الخضروات.");
+  if (ingredients.some(x => /طماطم/.test(x))) ideas.push("سلطة الطماطم: أضيفي المكونات المناسبة واغسلي الخضروات جيدًا.");
+  if (ingredients.some(x => /دجاج/.test(x))) ideas.push("طبق الدجاج: اطهي الدجاج حتى تصل حرارته الداخلية إلى 74 درجة مئوية.");
+  if (ingredients.some(x => /بطاطس|بطاطا/.test(x))) ideas.push("بطاطس بالفرن: قطّعيها واطهيها حتى تنضج.");
+  if (ingredients.some(x => /رز|أرز/.test(x))) ideas.push("طبق الأرز: قدّميه مع المكونات المتوفرة واحفظي البقايا سريعًا في الثلاجة.");
+
+  if (!ideas.length) {
+    ideas.push("جرّبي طبقًا بسيطًا يجمع مكوناتك، مثل سلطة أو ساندويتش أو طبق مطهو، بحسب نوع المكونات.");
+  }
+
+  result.textContent = "أفكار لك:\n• " + ideas.join("\n• ") +
+    "\n\nتأكدي من سلامة المكونات واطهي الأطعمة التي تحتاج إلى الطهي جيدًا.";
+  result.style.whiteSpace = "pre-line";
+  result.classList.remove("hidden");
+}
+
+function answerQuiz(answer) {
+  const q = quizQuestions[quizIndex];
+  const feedback = document.getElementById("quizFeedback");
+
+  if (q.answer === answer) {
+    quizScore++;
+    feedback.textContent = "إجابة صحيحة! 💚 " + q.explanation;
+  } else {
+    feedback.textContent = "حاولي مرة أخرى في السؤال القادم. " + q.explanation;
+  }
+
+  document.getElementById("quizScore").textContent = quizScore;
+}
+
+function nextQuizQuestion() {
+  quizIndex = (quizIndex + 1) % quizQuestions.length;
+  document.getElementById("quizQuestion").textContent = quizQuestions[quizIndex].question;
+  document.getElementById("quizFeedback").textContent = "";
+}
+
+function askAssistant() {
+  const question = document.getElementById("assistantQuestion").value.trim();
+  const result = document.getElementById("assistantResult");
+
+  if (!question) {
+    result.textContent = "اكتبي سؤالك أولًا.";
+    result.classList.remove("hidden");
+    return;
+  }
+
+  const q = question.toLowerCase();
+  let answer = "اتبعي تعليمات العبوة الرسمية، واحفظي الطعام بدرجة الحرارة المناسبة. إذا كان الطعام قابلًا للتلف وبقي خارج التبريد مدة طويلة، فلا تتذوقيه للتأكد من سلامته.";
+
+  if (/حليب|لبن/.test(q)) {
+    answer = "احفظي الحليب في الثلاجة عند 4 درجات مئوية أو أقل، وأعيديه للتبريد بعد الاستخدام. بعد الفتح اتبعي تعليمات العبوة.";
+  } else if (/دجاج|لحم|لحوم/.test(q)) {
+    answer = "احفظي اللحوم النيئة منفصلة عن الطعام الجاهز للأكل، واستخدمي أوعية تمنع التسرب. اطهي الدجاج حتى تبلغ حرارته الداخلية 74 درجة مئوية.";
+  } else if (/رز|أرز|مطبوخ|بقايا/.test(q)) {
+    answer = "برّدي الأرز وبقايا الطعام سريعًا، ولا تتركيها في حرارة الغرفة أكثر من ساعتين. أعيدي التسخين جيدًا، وتجنبي ترك الأرز المطبوخ خارج الثلاجة.";
+  } else if (/تجميد|فريزر/.test(q)) {
+    answer = "احفظي الأطعمة المجمدة عند -18 درجة مئوية أو أقل، وأذيبي الطعام بطريقة آمنة، مثل إذابته داخل الثلاجة.";
+  } else if (/صلاحية|منتهي|تاريخ/.test(q)) {
+    answer = "تحققي من تاريخ العبوة وتعليمات التخزين. لا تتذوقي طعامًا مشكوكًا فيه، ولا تعتمدي على الرائحة وحدها لتحديد سلامته.";
+  } else if (/غسل|يدين|يد/.test(q)) {
+    answer = "اغسلي يديك بالماء والصابون قبل إعداد الطعام وبعد التعامل مع اللحوم النيئة، ونظّفي الأدوات والأسطح بانتظام.";
+  }
+
+  result.textContent = answer + "\n\nهذه إجابة إرشادية عامة.";
+  result.classList.remove("hidden");
+}
+
+function speakText(text) {
   if (!("speechSynthesis" in window)) {
-    setStatus("ميزة القراءة الصوتية غير مدعومة في هذا المتصفح.");
+    alert("القراءة الصوتية غير مدعومة في هذا المتصفح.");
     return;
   }
 
   window.speechSynthesis.cancel();
-
-  const utterance = new SpeechSynthesisUtterance(lastAnswer);
-  utterance.rate = 0.85;
-  utterance.pitch = 1.1;
-
-  function chooseFemaleArabicVoice() {
-    const voices = window.speechSynthesis.getVoices();
-
-    const arabicVoices = voices.filter(function (voice) {
-      return voice.lang &&
-        voice.lang.toLowerCase().startsWith("ar");
-    });
-
-    const femaleSaudiVoice = arabicVoices.find(function (voice) {
-      return /ar-sa/i.test(voice.lang) &&
-        /female|woman|feminine|أنثى|امرأة/i.test(voice.name);
-    });
-
-    const femaleArabicVoice = arabicVoices.find(function (voice) {
-      return /female|woman|feminine|أنثى|امرأة/i.test(voice.name);
-    });
-
-    const saudiVoice = arabicVoices.find(function (voice) {
-      return /ar-sa/i.test(voice.lang);
-    });
-
-    const selectedVoice =
-      femaleSaudiVoice ||
-      femaleArabicVoice ||
-      saudiVoice ||
-      arabicVoices[0];
-
-    if (selectedVoice) {
-      utterance.voice = selectedVoice;
-      utterance.lang = selectedVoice.lang;
-    } else {
-      utterance.lang = "ar-SA";
-    }
-
-    utterance.onstart = function () {
-      setStatus("أقرأ لك الإجابة الآن بصوت مسموع 🔊");
-    };
-
-    utterance.onend = function () {
-      setStatus("انتهت قراءة الإجابة.");
-    };
-
-    utterance.onerror = function () {
-      setStatus("تعذرت قراءة الإجابة. حاولي مرة أخرى.");
-    };
-
-    window.speechSynthesis.speak(utterance);
-  }
-
-  if (window.speechSynthesis.getVoices().length) {
-    chooseFemaleArabicVoice();
-  } else {
-    window.speechSynthesis.onvoiceschanged = function () {
-      window.speechSynthesis.onvoiceschanged = null;
-      chooseFemaleArabicVoice();
-    };
-
-    setTimeout(function () {
-      if (!window.speechSynthesis.speaking) {
-        chooseFemaleArabicVoice();
-      }
-    }, 1000);
-  }
-});
-
-  stopButton.addEventListener("click", function () {
-    if (recognition) {
-      try {
-        recognition.stop();
-      } catch (error) {}
-    }
-
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-    }
-
-    setStatus("تم إيقاف الصوت.");
-  });
-  const foodImageInput = document.getElementById("foodImage");
-const foodImagePreview = document.getElementById("foodImagePreview");
-
-if (foodImageInput && foodImagePreview) {
-  foodImageInput.addEventListener("change", function () {
-    const file = this.files && this.files[0];
-
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      alert("اختاري صورة صالحة للطعام.");
-      this.value = "";
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      alert("اختاري صورة حجمها أقل من 10 ميجابايت.");
-      this.value = "";
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = function (event) {
-      foodImagePreview.src = event.target.result;
-      foodImagePreview.style.display = "block";
-    };
-
-    reader.readAsDataURL(file);
-  });
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "ar-SA";
+  utterance.rate = 0.9;
+  window.speechSynthesis.speak(utterance);
 }
-})();
-  </script>
-  
+
+function speakElement(id) {
+  const element = document.getElementById(id);
+  if (!element || !element.textContent.trim()) {
+    alert("لا توجد نتيجة لقراءتها حتى الآن.");
+    return;
+  }
+  speakText(element.textContent);
+}
+
+function stopSpeaking() {
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+}
+
+async function startBarcodeScanner() {
+  const result = document.getElementById("barcodeResult");
+
+  if (!window.Html5Qrcode) {
+    result.textContent = "تعذّر تحميل أداة الباركود. تحققي من اتصال الإنترنت.";
+    result.classList.remove("hidden");
+    return;
+  }
+
+  try {
+    if (scanner) await stopBarcodeScanner();
+
+    scanner = new Html5Qrcode("barcodeReader");
+    await scanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 230, height: 130 } },
+      async code => {
+        document.getElementById("barcodeInput").value = code;
+        await stopBarcodeScanner();
+        lookupBarcode();
+      },
+      () => {}
+    );
+  } catch {
+    result.textContent = "لم تعمل الكاميرا. اسمحي للمتصفح باستخدام الكاميرا وافتحي الموقع عبر HTTPS.";
+    result.classList.remove("hidden");
+  }
+}
+
+async function stopBarcodeScanner() {
+  if (scanner) {
+    try {
+      if (scanner.isScanning) await scanner.stop();
+      await scanner.clear();
+    } catch {}
+    scanner = null;
+  }
+}
+
+async function lookupBarcode() {
+  const code = document.getElementById("barcodeInput").value.trim();
+  const result = document.getElementById("barcodeResult");
+
+  if (!code) {
+    result.textContent = "أدخلي رقم الباركود أولًا.";
+    result.classList.remove("hidden");
+    return;
+  }
+
+  result.textContent = "جارٍ البحث عن بيانات المنتج...";
+  result.classList.remove("hidden");
+
+  try {
+    const response = await fetch(
+      "https://world.openfoodfacts.org/api/v2/product/" +
+      encodeURIComponent(code) + ".json"
+    );
+    const data = await response.json();
+
+    if (data.status === 1 && data.product) {
+      const p = data.product;
+      result.textContent =
+        "اسم المنتج: " + (p.product_name || "غير متوفر") +
+        "\nالشركة: " + (p.brands || "غير متوفرة") +
+        "\nالباركود: " + code +
+        "\n\nبيانات المنتج مقدمة من Open Food Facts، وقد تكون غير مكتملة.";
+
+      if (p.product_name) {
+        document.getElementById("productName").value = p.product_name;
+      }
+      if (p.brands) {
+        document.getElementById("productNotes").value = "الشركة: " + p.brands;
+      }
+    } else {
+      result.textContent = "لم نعثر على المنتج. يمكنك إدخال بياناته يدويًا.";
+    }
+  } catch {
+    result.textContent = "تعذّر الاتصال بقاعدة بيانات المنتجات. تحققي من الإنترنت.";
+  }
+}
+
+function exportProducts() {
+  const blob = new Blob([JSON.stringify(products, null, 2)], {
+    type: "application/json"
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "smart-fridge-products.json";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function importProducts() {
+  const input = document.getElementById("importFile");
+  const file = input.files[0];
+
+  if (!file) {
+    alert("اختاري ملف النسخة المحفوظة أولًا.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+
+      if (!Array.isArray(data) || !data.every(p =>
+        p && typeof p.name === "string" && typeof p.expiry === "string"
+      )) {
+        throw new Error("invalid file");
+      }
+
+      if (!confirm("ستُستبدل قائمة المنتجات الحالية بمحتوى الملف. هل تريدين المتابعة؟")) return;
+
+      const oldProducts = products;
+      products = data.map(p => ({
+        ...p,
+        id: p.id || Date.now().toString() + Math.random().toString(16).slice(2)
+      }));
+
+      if (saveProducts()) {
+        renderProducts();
+        alert("تمت استعادة المنتجات.");
+      } else {
+        products = oldProducts;
+      }
+    } catch {
+      alert("الملف غير صالح أو لا يحتوي على بيانات منتجات مناسبة.");
+    }
+  };
+
+  reader.readAsText(file);
+}
+
+function clearProducts() {
+  if (!confirm("هل أنتِ متأكدة من حذف جميع المنتجات؟ لا يمكن التراجع عن الحذف.")) return;
+
+  products = [];
+  if (saveProducts()) {
+    renderProducts();
+    alert("تم حذف المنتجات.");
+  }
+}
+
+refreshDashboard();
+</script>
+
 </body>
 </html>
