@@ -606,27 +606,31 @@ body.large-text textarea {
 
 <section id="barcodePage" class="page">
   <h2>📷 مسح الباركود</h2>
-  <p>يمكنك استخدام كاميرا الجهاز لمحاولة قراءة باركود المنتج.</p>
-
+  <p>امسحي الباركود وأدخلي تاريخ الصلاحية لإضافة المنتج إلى منتجاتي.</p>
   <div class="card">
     <button class="primary-button full-button" onclick="startBarcodeScanner()">
       تشغيل الكاميرا
     </button>
-
     <button class="secondary-button full-button" onclick="stopBarcodeScanner()">
       إيقاف الكاميرا
     </button>
-
     <div id="barcodeReader" style="width:100%;margin-top:15px"></div>
-
     <label for="barcodeInput">أو أدخلي رقم الباركود</label>
     <input id="barcodeInput" inputmode="numeric" placeholder="رقم الباركود">
-
     <button class="secondary-button full-button" onclick="lookupBarcode()">
       البحث عن المنتج
     </button>
-
     <div id="barcodeResult" class="result hidden" aria-live="polite"></div>
+    <div id="scannedProductForm" hidden>
+      <h3>🧊 إضافة المنتج إلى منتجاتي</h3>
+      <label for="scannedProductName">اسم المنتج</label>
+      <input id="scannedProductName" type="text" placeholder="اسم المنتج">
+      <label for="scannedExpiryDate">تاريخ الصلاحية</label>
+      <input id="scannedExpiryDate" type="date" required>
+      <button class="primary-button full-button" type="button" onclick="saveScannedProduct()">
+        إضافة إلى منتجاتي
+      </button>
+    </div>
   </div>
 </section>
 
@@ -1121,19 +1125,35 @@ function askAssistant() {
   result.classList.remove("hidden");
 }
 
+function getArabicVoice() {
+  if (!("speechSynthesis" in window)) return null;
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find(v => v.lang.toLowerCase() === "ar-sa")
+    || voices.find(v => v.lang.toLowerCase().startsWith("ar"))
+    || null;
+}
 function speakText(text) {
   if (!("speechSynthesis" in window)) {
     alert("القراءة الصوتية غير مدعومة في هذا المتصفح.");
     return;
   }
-
+  const cleanText = String(text || "").trim();
+  if (!cleanText) {
+    alert("لا يوجد نص لقراءته.");
+    return;
+  }
   window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "ar-SA";
+  const utterance = new SpeechSynthesisUtterance(cleanText);
+  const voice = getArabicVoice();
+  utterance.lang = voice ? voice.lang : "ar-SA";
+  if (voice) {
+    utterance.voice = voice;
+  }
   utterance.rate = 0.9;
+  utterance.pitch = 1;
+  utterance.volume = 1;
   window.speechSynthesis.speak(utterance);
 }
-
 function speakElement(id) {
   const element = document.getElementById(id);
   if (!element || !element.textContent.trim()) {
@@ -1142,37 +1162,9 @@ function speakElement(id) {
   }
   speakText(element.textContent);
 }
-
 function stopSpeaking() {
-  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-}
-
-async function startBarcodeScanner() {
-  const result = document.getElementById("barcodeResult");
-
-  if (!window.Html5Qrcode) {
-    result.textContent = "تعذّر تحميل أداة الباركود. تحققي من اتصال الإنترنت.";
-    result.classList.remove("hidden");
-    return;
-  }
-
-  try {
-    if (scanner) await stopBarcodeScanner();
-
-    scanner = new Html5Qrcode("barcodeReader");
-    await scanner.start(
-      { facingMode: "environment" },
-      { fps: 10, qrbox: { width: 230, height: 130 } },
-      async code => {
-        document.getElementById("barcodeInput").value = code;
-        await stopBarcodeScanner();
-        lookupBarcode();
-      },
-      () => {}
-    );
-  } catch {
-    result.textContent = "لم تعمل الكاميرا. اسمحي للمتصفح باستخدام الكاميرا وافتحي الموقع عبر HTTPS.";
-    result.classList.remove("hidden");
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
   }
 }
 
