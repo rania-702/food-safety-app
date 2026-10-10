@@ -606,14 +606,8 @@ body.large-text textarea {
 
 <section id="barcodePage" class="page">
   <h2>📷 مسح الباركود</h2>
-  <p>امسحي الباركود وأدخلي تاريخ الصلاحية لإضافة المنتج إلى منتجاتي.</p>
+  <p>وجّهي الكاميرا نحو باركود المنتج لمسحه تلقائيًا.</p>
   <div class="card">
-    <button class="primary-button full-button" onclick="startBarcodeScanner()">
-      تشغيل الكاميرا
-    </button>
-    <button class="secondary-button full-button" onclick="stopBarcodeScanner()">
-      إيقاف الكاميرا
-    </button>
     <div id="barcodeReader" style="width:100%;margin-top:15px"></div>
     <label for="barcodeInput">أو أدخلي رقم الباركود</label>
     <input id="barcodeInput" inputmode="numeric" placeholder="رقم الباركود">
@@ -633,7 +627,6 @@ body.large-text textarea {
     </div>
   </div>
 </section>
-
 <section id="recipesPage" class="page">
   <h2>🍲 وصفاتي</h2>
   <p>أفكار بسيطة للاستفادة من المكونات الموجودة عندك.</p>
@@ -846,8 +839,19 @@ function openPage(pageId) {
     button.classList.toggle("active", button.dataset.page === pageId);
   });
 
-  if (pageId === "inventoryListPage") renderProducts();
-  if (pageId === "notificationsPage") renderNotifications();
+  if (pageId === "inventoryListPage") {
+    renderProducts();
+  }
+
+  if (pageId === "notificationsPage") {
+    renderNotifications();
+  }
+
+  if (pageId === "barcodePage") {
+    startBarcodeScanner();
+  } else {
+    stopBarcodeScanner();
+  }
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -858,19 +862,25 @@ function toggleLargeText() {
 
 function daysUntil(dateString) {
   if (!dateString) return null;
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+
   const expiry = new Date(dateString + "T00:00:00");
+
   if (Number.isNaN(expiry.getTime())) return null;
+
   return Math.round((expiry - today) / 86400000);
 }
 
 function productStatus(product) {
   const days = daysUntil(product.expiry);
+
   if (days === null) return "لم يُحدد التاريخ";
   if (days < 0) return "منتهي الصلاحية";
   if (days === 0) return "تنتهي صلاحيته اليوم";
   if (days <= 3) return "قريب الانتهاء";
+
   return "صالح حسب التاريخ المسجل";
 }
 
@@ -880,6 +890,22 @@ function refreshDashboard() {
     return d !== null && d >= 0 && d <= 3;
   });
 
+  const expired = products.filter(p => {
+    const d = daysUntil(p.expiry);
+    return d !== null && d < 0;
+  });
+
+  const totalElement = document.getElementById("totalCount");
+  const soonElement = document.getElementById("soonCount");
+  const expiredElement = document.getElementById("expiredCount");
+  const alertElement = document.getElementById("alertCount");
+
+  if (totalElement) totalElement.textContent = products.length;
+  if (soonElement) soonElement.textContent = soon.length;
+  if (expiredElement) expiredElement.textContent = expired.length;
+  if (alertElement) alertElement.textContent = soon.length + expired.length;
+}
+
   const expired = products.filter(p => daysUntil(p.expiry) < 0);
 
   document.getElementById("totalCount").textContent = products.length;
@@ -888,7 +914,7 @@ function refreshDashboard() {
   document.getElementById("alertCount").textContent = soon.length + expired.length;
 
   renderNotifications();
-}
+
 
 document.getElementById("productForm").addEventListener("submit", function(event) {
   event.preventDefault();
