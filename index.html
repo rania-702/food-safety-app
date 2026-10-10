@@ -1111,9 +1111,32 @@ function speakAssistant() {
   }
 
   window.speechSynthesis.cancel();
+
   const speech = new SpeechSynthesisUtterance(assistantAnswerText);
   speech.lang = "ar-SA";
-  speech.rate = 0.9;
+  speech.rate = 0.88;
+  speech.pitch = 1.12;
+  speech.volume = 1;
+
+  const voices = window.speechSynthesis.getVoices();
+
+  const arabicVoices = voices.filter(voice =>
+    voice.lang.toLowerCase().startsWith("ar")
+  );
+
+  const preferredVoice =
+    arabicVoices.find(voice =>
+      /female|woman|zira|sara|hoda|laila|maha/i.test(voice.name)
+    ) ||
+    arabicVoices.find(voice =>
+      voice.lang.toLowerCase() === "ar-sa"
+    ) ||
+    arabicVoices[0];
+
+  if (preferredVoice) {
+    speech.voice = preferredVoice;
+  }
+
   window.speechSynthesis.speak(speech);
 }
 
