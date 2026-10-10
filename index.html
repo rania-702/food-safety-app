@@ -784,3 +784,350 @@ function exportProducts() {
   link.click();
   URL.revokeObjectURL(url);
 }
+async function startScanner() {
+  const message = document.getElementById("scannerMessage");
+
+  if (!window.Html5Qrcode) {
+    message.textContent = "تعذر تحميل قارئ الباركود. تحققي من اتصال الإنترنت.";
+    message.className = "result warning";
+    return;
+  }
+
+  if (scannerRunning) return;
+
+  try {
+    scanner = new Html5Qrcode("barcodeReader");
+    await scanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 230, height: 160 } },
+      code => {
+        if (code === lastBarcode) return;
+        lastBarcode = code;
+        document.getElementById("barcodeInput").value = code;
+        stopScanner();
+        lookupBarcode();
+      },
+      () => {}
+    );
+
+    scannerRunning = true;
+    message.textContent = "الكاميرا تعمل. وجّهيها نحو الباركود.";
+    message.className = "result success";
+  } catch (error) {
+    message.textContent = "لم نتمكن من تشغيل الكاميرا. اسمحي للمتصفح باستخدام الكاميرا، ثم اضغطي تشغيل الكاميرا.";
+    message.className = "result warning";
+    scanner = null;
+    scannerRunning = false;
+  }
+}
+
+async function stopScanner() {
+  if (!scanner) return;
+
+  try {
+    if (scannerRunning) await scanner.stop();
+    await scanner.clear();
+  } catch (error) {}
+
+  scanner = null;
+  scannerRunning = false;
+}
+
+async function lookupBarcode() {
+  const code = document.getElementById("barcodeInput").value.trim();
+  const result = document.getElementById("barcodeResult");
+
+  if (!code) {
+    result.textContent = "امسحي الباركود أو اكتبي رقمه أولًا.";
+    result.className = "result warning";
+    return;
+  }
+
+  result.textContent = "جارٍ البحث عن المنتج...";
+  result.className = "result";
+
+  try {
+    const response = await fetch(
+      "https://world.openfoodfacts.org/api/v2/product/" +
+      encodeURIComponent(code) +
+      ".json"
+    );
+    const data = await response.json();
+
+    if (data.status === 1 && data.product) {
+      const product = data.product;
+      const name = product.product_name_ar ||
+        product.product_name ||
+        product.generic_name_ar ||
+        product.generic_name ||
+        "";
+
+      if (name) {
+        document.getElementById("productName").value = name;
+      }
+
+      const category = document.getElementById("productCategory");
+      const categoryText = (
+        (product.categories_tags || []).join(" ") + " " +
+        (product.categories || "")
+      ).toLowerCase();
+
+      if (/dairy|milk|cheese|yogurt/.test(categoryText)) {
+        category.value = "ألبان";
+      } else if (/vegetable|fruit/.test(categoryText)) {
+        category.value = "خضار وفواكه";
+      } else if (/meat|chicken|poultry/.test(categoryText)) {
+        category.value = "لحوم ودواجن";
+      } else if (/fish|seafood/.test(categoryText)) {
+        category.value = "أسماك";
+      } else if (/canned/.test(categoryText)) {
+        category.value = "معلبات";
+      } else if (/bread|bakery/.test(categoryText)) {
+        category.value = "مخبوزات";
+      }
+
+      result.textContent = name
+        ? `تم العثور على المنتج: ${name}. تحققي من الاسم والتصنيف، ثم أدخلي تاريخ الصلاحية الموجود على العبوة.`
+        : "تم العثور على الباركود، لكن اسم المنتج غير متوفر. اكتبي الاسم يدويًا.";
+
+      result.className = "result success";
+    } else {
+      result.textContent = "لم نعثر على المنتج. اكتبي اسمه يدويًا وأكملي البيانات.";
+      result.className = "result warning";
+    }
+  } catch (error) {
+    result.textContent = "تعذر البحث عبر الإنترنت. يمكنك إدخال اسم المنتج يدويًا.";
+    result.className = "result warning";
+  }
+}
+
+function analyzeFood() {
+  const food = document.getElementById("analysisFood").value.trim();
+  const storage = document.getElementById("analysisStorage").value;
+  const state = document.getElementById("analysisState").value;
+  const result = document.getElementById("analysisResult");
+
+  if (!food) {
+    result.textContent = "اكتبي اسم الطعام أولًا.";
+    result.className = "result warning";
+    return;
+  }
+
+  let advice = `<strong>${escapeHTML(food)}</strong><br>`;
+
+  if (state === "رائحة أو شكل غير طبيعي") {
+    advice += "لا تتذوقي الطعام للتأكد من سلامته. عند وجود علامات فساد، تخلّصي منه بأمان.";
+    result.className = "result danger";
+  } else {
+    if (storage === "خارج الثلاجة") {
+      advice += "إذا كان الطعام سريع التلف، فلا تتركيه خارج التبريد أكثر من ساعتين، أو ساعة واحدة إذا تجاوزت الحرارة 32°م.<br>";
+    } else if (storage === "الثلاجة") {
+      advice += "احرصي على ضبط الثلاجة عند 4°م أو أقل، واتبعي تعليمات العبوة.<br>";
+    } else {
+      advice += "احفظي الطعام في الفريزر عند -18°م أو أقل، مع تغليفه جيدًا.<br>";
+    }
+
+    if (state === "مطبوخ") {
+      advice += "ضعي الطعام المطبوخ في الثلاجة خلال ساعتين، ويفضل تقسيم الكمية في أوعية ضحلة لتبرد بسرعة.<br>";
+    } else if (state === "مفتوح") {
+      advice += "اتبعي تعليمات الحفظ بعد الفتح والمدة المحددة على العبوة.<br>";
+    }
+
+    advice += "لا تعتمدي على الرائحة أو الشكل وحدهما للحكم على السلامة.";
+    result.className = "result";
+  }
+
+  result.innerHTML = advice;
+  result.classList.remove("hidden");
+}
+
+function suggestRecipe() {
+  const input = document.getElementById("recipeIngredients").value.trim();
+  const result = document.getElementById("recipeResult");
+
+  if (!input) {
+    result.textContent = "اكتبي مكونًا واحدًا على الأقل.";
+    result.className = "result warning";
+    return;
+  }
+
+  const ingredients = input.split(/[،,]/).map(item => item.trim()).filter(Boolean);
+  const text = ingredients.join("، ");
+
+  result.innerHTML =
+    `<strong>فكرة مبدئية للمكونات: ${escapeHTML(text)}</strong><br>` +
+    "يمكنك إعداد طبق بسيط يجمع المكونات المتوافقة، مثل سلطة أو ساندويتش أو طبق مطبوخ حسب نوعها. تحققي من سلامة كل مكون واطهي اللحوم والبيض جيدًا. هذه اقتراحات عامة وليست وصفة مضمونة لكل مجموعة مكونات.";
+  result.className = "result success";
+}
+
+const quizQuestions = [
+  {
+    question: "أين نحفظ الحليب بعد فتحه إذا كانت العبوة تنص على التبريد؟",
+    options: ["في الثلاجة", "على طاولة المطبخ", "بجانب الفرن"],
+    correct: 0,
+    explanation: "صحيح! اتبعي تعليمات العبوة واحفظي الحليب مبردًا."
+  },
+  {
+    question: "هل نستخدم لوح التقطيع نفسه للدجاج النيئ والخضار دون تنظيفه؟",
+    options: ["نعم دائمًا", "لا، يجب منع التلوث المتبادل", "نعم إذا كان لونه نظيفًا"],
+    correct: 1,
+    explanation: "صحيح! افصلي أدوات الطعام النيئ عن الطعام الجاهز للأكل."
+  },
+  {
+    question: "ما درجة حرارة الثلاجة المناسبة لحفظ الأطعمة سريعة التلف؟",
+    options: ["10°م", "8°م", "4°م أو أقل"],
+    correct: 2,
+    explanation: "صحيح! اضبطي الثلاجة على 4°م أو أقل."
+  },
+  {
+    question: "ماذا نفعل بالطعام سريع التلف الذي بقي خارج الثلاجة أكثر من ساعتين؟",
+    options: ["نضعه في الثلاجة ونأكله لاحقًا", "نتخلص منه بأمان", "نتذوقه أولًا"],
+    correct: 1,
+    explanation: "صحيح! القاعدة العامة ساعتان، أو ساعة في حرارة تتجاوز 32°م."
+  },
+  {
+    question: "هل يكفي أن تكون رائحة الطعام طبيعية للتأكد من سلامته؟",
+    options: ["نعم", "لا، فبعض الأخطار لا تُرى ولا تُشم", "نعم إذا كان لونه طبيعيًا"],
+    correct: 1,
+    explanation: "صحيح! الرائحة والشكل لا يكفيان وحدهما للحكم على السلامة."
+  }
+];
+
+function showQuestion() {
+  const question = quizQuestions[quizIndex];
+  if (!question) return;
+
+  quizAnswered = false;
+  document.getElementById("quizProgress").textContent =
+    `السؤال ${quizIndex + 1} من ${quizQuestions.length}`;
+  document.getElementById("quizQuestion").textContent = question.question;
+  document.getElementById("celebration").textContent = "";
+  document.getElementById("quizFeedback").classList.add("hidden");
+  document.getElementById("nextQuestionBtn").classList.add("hidden");
+  document.getElementById("restartQuizBtn").classList.add("hidden");
+
+  const options = document.getElementById("quizOptions");
+  options.innerHTML = "";
+
+  question.options.forEach((option, index) => {
+    const button = document.createElement("button");
+    button.className = "quiz-option";
+    button.textContent = option;
+    button.onclick = () => answerQuestion(index);
+    options.appendChild(button);
+  });
+}
+
+function answerQuestion(index) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+
+  const question = quizQuestions[quizIndex];
+  const buttons = document.querySelectorAll("#quizOptions .quiz-option");
+  buttons.forEach(button => button.disabled = true);
+  buttons[question.correct].classList.add("correct");
+
+  const feedback = document.getElementById("quizFeedback");
+  const celebration = document.getElementById("celebration");
+
+  if (index === question.correct) {
+    coins += 5;
+    updateCoinsDisplay();
+    celebration.textContent = "🎉✨👏";
+    feedback.textContent = "إجابة صحيحة! حصلتِ على 5 عملات. " + question.explanation;
+    feedback.className = "result success";
+  } else {
+    buttons[index].classList.add("wrong");
+    celebration.textContent = "💚";
+    feedback.textContent = "مو مشكلة، نتعلم مع بعض! " + question.explanation;
+    feedback.className = "result warning";
+  }
+
+  feedback.classList.remove("hidden");
+
+  if (quizIndex < quizQuestions.length - 1) {
+    document.getElementById("nextQuestionBtn").classList.remove("hidden");
+  } else {
+    document.getElementById("restartQuizBtn").classList.remove("hidden");
+    document.getElementById("quizProgress").textContent =
+      "انتهى الاختبار! رصيدك الحالي " + coins + " عملة 🪙";
+  }
+}
+
+function nextQuestion() {
+  if (quizIndex < quizQuestions.length - 1) {
+    quizIndex++;
+    showQuestion();
+  }
+}
+
+function restartQuiz() {
+  quizIndex = 0;
+  showQuestion();
+}
+
+function askAssistant() {
+  const question = document.getElementById("assistantQuestion").value.trim();
+  const result = document.getElementById("assistantResult");
+
+  if (!question) {
+    result.textContent = "اكتبي سؤالك أولًا.";
+    result.className = "result warning";
+    return;
+  }
+
+  const q = question.toLowerCase();
+  let answer = "اتبعي تعليمات ملصق الطعام، واحفظي الأطعمة سريعة التلف في درجة حرارة مناسبة. إذا شككتِ في سلامة الطعام، فلا تتذوقيه.";
+
+  if (/دجاج|لحم|لحوم|سمك|سمك/.test(q)) {
+    answer = "احفظي اللحوم والدواجن النيئة في وعاء محكم أسفل الثلاجة لمنع تسرب السوائل إلى الأطعمة الأخرى. افصليها عن الطعام الجاهز للأكل واطهيها جيدًا.";
+  } else if (/حليب|لبن|جبن|زبادي/.test(q)) {
+    answer = "احفظي منتجات الألبان حسب تعليمات العبوة، وأعيديها إلى الثلاجة بسرعة بعد الاستخدام. اتبعي مدة الاستخدام بعد الفتح.";
+  } else if (/أرز|رز|طبخ|مطبوخ|بقايا/.test(q)) {
+    answer = "برّدي بقايا الطعام بسرعة في أوعية ضحلة، وضعيها في الثلاجة خلال ساعتين. أعيدي تسخينها جيدًا، ولا تتركيها طويلًا في حرارة الغرفة.";
+  } else if (/فريزر|تجميد|مجمد/.test(q)) {
+    answer = "احفظي الطعام المجمد عند -18°م أو أقل، وغلفيه جيدًا. أذيبي الطعام في الثلاجة أو بطريقة آمنة، وليس على سطح المطبخ.";
+  } else if (/ثلاجة|حرارة|درجة/.test(q)) {
+    answer = "اضبطي الثلاجة عند 4°م أو أقل، والفريزر عند -18°م أو أقل. استخدمي مقياس حرارة للتأكد من الدرجة.";
+  } else if (/انتهاء|منتهي|صلاحية|فاسد/.test(q)) {
+    answer = "تحققي من تاريخ العبوة وتعليمات التخزين. لا تستخدمي طعامًا انتهت صلاحيته، ولا تتذوقي الطعام المشكوك في سلامته.";
+  }
+
+  assistantAnswerText = answer;
+  result.textContent = answer;
+  result.className = "result";
+  result.classList.remove("hidden");
+}
+
+function speakAssistant() {
+  if (!assistantAnswerText) {
+    askAssistant();
+    if (!assistantAnswerText) return;
+  }
+
+  if (!("speechSynthesis" in window)) {
+    alert("ميزة القراءة الصوتية غير مدعومة في هذا المتصفح.");
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  const speech = new SpeechSynthesisUtterance(assistantAnswerText);
+  speech.lang = "ar-SA";
+  speech.rate = 0.9;
+  window.speechSynthesis.speak(speech);
+}
+
+window.addEventListener("beforeunload", () => {
+  if (scannerRunning && scanner) {
+    scanner.stop().catch(() => {});
+  }
+});
+
+refreshDashboard();
+renderProducts();
+renderNotifications();
+updateGreeting();
+showQuestion();
+</script>
+</body>
+</html>
