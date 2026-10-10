@@ -1218,49 +1218,51 @@ async function lookupBarcode() {
   result.classList.remove("hidden");
 
   try {
-    const response = await fetch(
-      "https://world.openfoodfacts.org/api/v2/product/" +
-      encodeURIComponent(code) + ".json"
-    );
+    const response = await fetch("https://world.openfoodfacts.org/api/v2/product/" + encodeURIComponent(code) + ".json");
+
+    if (!response.ok) throw new Error("network");
+
     const data = await response.json();
 
     if (data.status === 1 && data.product) {
       const p = data.product;
-      result.textContent =
-        "اسم المنتج: " + (p.product_name || "غير متوفر") +
-        "\nالشركة: " + (p.brands || "غير متوفرة") +
-        "\nالباركود: " + code +
-        "\n\nبيانات المنتج مقدمة من Open Food Facts، وقد تكون غير مكتملة.";
+      result.textContent = "اسم المنتج: " + (p.product_name || "غير متوفر") + "\nالشركة: " + (p.brands || "غير متوفرة") + "\nالباركود: " + code + "\n\nقد تكون بيانات المنتج غير مكتملة.";
 
-      if (p.product_name) {
-        document.getElementById("productName").value = p.product_name;
-      }
-      if (p.brands) {
-        document.getElementById("productNotes").value = "الشركة: " + p.brands;
+      const nameInput = document.getElementById("productName");
+      const notesInput = document.getElementById("productNotes");
+      const scannedName = document.getElementById("scannedProductName");
+      const scannedForm = document.getElementById("scannedProductForm");
+
+      if (nameInput && p.product_name) nameInput.value = p.product_name;
+      if (notesInput && p.brands) notesInput.value = "الشركة: " + p.brands;
+
+      if (scannedName && scannedForm) {
+        scannedName.value = p.product_name || "";
+        scannedForm.hidden = false;
       }
     } else {
       result.textContent = "لم نعثر على المنتج. يمكنك إدخال بياناته يدويًا.";
     }
-  } catch {
+  } catch (error) {
     result.textContent = "تعذّر الاتصال بقاعدة بيانات المنتجات. تحققي من الإنترنت.";
   }
 }
 
 function exportProducts() {
-  const blob = new Blob([JSON.stringify(products, null, 2)], {
-    type: "application/json"
-  });
+  const blob = new Blob([JSON.stringify(products, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
   link.download = "smart-fridge-products.json";
+  document.body.appendChild(link);
   link.click();
-  URL.revokeObjectURL(url);
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function importProducts() {
   const input = document.getElementById("importFile");
-  const file = input.files[0];
+  const file = input && input.files ? input.files[0] : null;
 
   if (!file) {
     alert("اختاري ملف النسخة المحفوظة أولًا.");
@@ -1273,9 +1275,7 @@ function importProducts() {
     try {
       const data = JSON.parse(reader.result);
 
-      if (!Array.isArray(data) || !data.every(p =>
-        p && typeof p.name === "string" && typeof p.expiry === "string"
-      )) {
+      if (!Array.isArray(data) || !data.every(p => p && typeof p.name === "string" && typeof p.expiry === "string")) {
         throw new Error("invalid file");
       }
 
@@ -1289,11 +1289,13 @@ function importProducts() {
 
       if (saveProducts()) {
         renderProducts();
+        refreshDashboard();
         alert("تمت استعادة المنتجات.");
       } else {
         products = oldProducts;
+        alert("تعذّر حفظ المنتجات المستعادة.");
       }
-    } catch {
+    } catch (error) {
       alert("الملف غير صالح أو لا يحتوي على بيانات منتجات مناسبة.");
     }
   };
@@ -1304,15 +1306,20 @@ function importProducts() {
 function clearProducts() {
   if (!confirm("هل أنتِ متأكدة من حذف جميع المنتجات؟ لا يمكن التراجع عن الحذف.")) return;
 
+  const oldProducts = products;
   products = [];
+
   if (saveProducts()) {
     renderProducts();
+    refreshDashboard();
     alert("تم حذف المنتجات.");
+  } else {
+    products = oldProducts;
+    alert("تعذّر حذف المنتجات. حاولي مرة أخرى.");
   }
 }
 
 refreshDashboard();
 </script>
-
 </body>
 </html>
